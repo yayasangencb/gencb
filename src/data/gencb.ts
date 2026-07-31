@@ -94,64 +94,8 @@ export const programs: {
   },
 ];
 
-export type EventStatus = "OPEN" | "SOON" | "ONGOING" | "CLOSED";
-
-export const events: {
-  slug: string;
-  title: string;
-  category: string;
-  status: EventStatus;
-  date: string;
-  location: string;
-  quota: number;
-  registered: number;
-  image: string;
-}[] = [
-  {
-    slug: "mtq-desa-sasak-panjang",
-    title: "MTQ Desa Sasak Panjang",
-    category: "Keagamaan",
-    status: "OPEN",
-    date: "12 September 2026",
-    location: "Masjid Jami Al-Ikhlas, Sasak Panjang",
-    quota: 200,
-    registered: 120,
-    image: progKeagamaan,
-  },
-  {
-    slug: "seminar-pemuda-berdaya",
-    title: "Seminar Pemuda Berdaya",
-    category: "Kepemudaan",
-    status: "SOON",
-    date: "3 Oktober 2026",
-    location: "Aula Desa Sasak Panjang",
-    quota: 150,
-    registered: 0,
-    image: progPendidikan,
-  },
-  {
-    slug: "turnamen-tenis-meja",
-    title: "Turnamen Tenis Meja GEN-CB",
-    category: "Olahraga",
-    status: "ONGOING",
-    date: "1–5 Agustus 2026",
-    location: "Lapangan Serbaguna RW 04",
-    quota: 64,
-    registered: 64,
-    image: progOlahraga,
-  },
-  {
-    slug: "bakti-sosial-ramadan",
-    title: "Bakti Sosial Ramadan",
-    category: "Sosial",
-    status: "CLOSED",
-    date: "18 Maret 2026",
-    location: "Balai Warga Sasak Panjang",
-    quota: 100,
-    registered: 100,
-    image: progSosial,
-  },
-];
+export type { EventStatus } from "./events";
+export { events } from "./events";
 
 export const news = [
   {

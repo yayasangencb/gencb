@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import logoAsset from "@/assets/logo-gencb.png.asset.json";
 
 const steps = [
   "Initializing GEN-CB...",
@@ -50,8 +51,14 @@ export function LoadingScreen() {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center gap-6"
           >
-            <div className="glass flex size-20 items-center justify-center rounded-3xl font-display text-2xl font-bold text-primary-foreground">
-              GC
+            <div className="glass flex size-24 items-center justify-center rounded-3xl p-3">
+              <img
+                src={logoAsset.url}
+                alt="Logo Generasi Cerdas Beraksi"
+                width={80}
+                height={80}
+                className="size-full object-contain"
+              />
             </div>
             <p className="font-display text-xl font-semibold text-primary-foreground">
               Generasi Cerdas Beraksi

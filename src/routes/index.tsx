@@ -159,7 +159,7 @@ function Index() {
             description="Pendaftaran online tersedia untuk kegiatan berstatus OPEN."
           />
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {events.map((e, i) => (
+            {events.slice(0, 4).map((e, i) => (
               <Reveal key={e.slug} delay={i * 0.06}>
                 <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
                   <div className="relative h-40 overflow-hidden">
@@ -183,7 +183,9 @@ function Index() {
                       {e.registered}/{e.quota} peserta
                     </p>
                     <Button asChild variant="hero" size="sm" className="mt-5 w-full">
-                      <Link to="/event">Detail</Link>
+                      <Link to="/event/$slug" params={{ slug: e.slug }}>
+                        Detail
+                      </Link>
                     </Button>
                   </div>
                 </article>

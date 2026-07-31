@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { navLinks } from "@/data/gencb";
+import logoAsset from "@/assets/logo-gencb.png.asset.json";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -40,9 +41,13 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-2xl bg-gradient-brand font-display text-sm font-bold text-primary-foreground">
-            GC
-          </span>
+          <img
+            src={logoAsset.url}
+            alt="Logo Generasi Cerdas Beraksi"
+            width={44}
+            height={44}
+            className="size-11 object-contain"
+          />
           <span className="hidden font-display text-sm font-bold leading-tight sm:block">
             GEN-CB
             <span className="block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
@@ -68,6 +73,9 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" aria-label="Ubah tema" onClick={toggleTheme}>
             {dark ? <Sun /> : <Moon />}
+          </Button>
+          <Button asChild variant="ghost" size="sm" className="hidden lg:inline-flex">
+            <Link to="/dashboard">Dashboard</Link>
           </Button>
           <Button asChild variant="hero" size="sm" className="hidden sm:inline-flex">
             <Link to="/event">Daftar Kegiatan</Link>
