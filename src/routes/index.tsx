@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "GEN-CB — Yayasan Generasi Cerdas Beraksi" },
       {
         property: "og:description",
-        content: "Membangun Generasi Cerdas, Berkarakter, dan Berdampak untuk Indonesia.",
+        content: "Pusat informasi program, kegiatan, berita, dan donasi Yayasan Generasi Cerdas Beraksi (GEN-CB).",
       },
     ],
   }),

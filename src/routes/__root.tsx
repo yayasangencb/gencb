@@ -81,21 +81,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "GEN-CB — Generasi Cerdas Beraksi" },
+      { title: "GEN-CB — Yayasan Generasi Cerdas Beraksi" },
       {
         name: "description",
         content:
-          "Yayasan Generasi Cerdas Beraksi (GEN-CB): pendidikan, sosial, keagamaan, kepemudaan, dan olahraga.",
+          "Pusat informasi program, kegiatan, berita, dan donasi Yayasan Generasi Cerdas Beraksi (GEN-CB).",
       },
       { name: "author", content: "Generasi Cerdas Beraksi" },
-      { property: "og:title", content: "GEN-CB — Generasi Cerdas Beraksi" },
+      { property: "og:title", content: "GEN-CB — Yayasan Generasi Cerdas Beraksi" },
       {
         property: "og:description",
-        content: "Membangun Generasi Cerdas, Berkarakter, dan Berdampak untuk Indonesia.",
+        content: "Pusat informasi program, kegiatan, berita, dan donasi Yayasan Generasi Cerdas Beraksi (GEN-CB).",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "GEN-CB — Yayasan Generasi Cerdas Beraksi" },
+      { name: "twitter:description", content: "Pusat informasi program, kegiatan, berita, dan donasi Yayasan Generasi Cerdas Beraksi (GEN-CB)." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/478e85ef-29fd-42af-b6ed-9d5427d6df2b" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/478e85ef-29fd-42af-b6ed-9d5427d6df2b" },
     ],
     links: [
       {
