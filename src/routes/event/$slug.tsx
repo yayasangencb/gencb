@@ -191,7 +191,7 @@ function EventDetail() {
           {e.competitions.length > 0 ? (
             <Reveal>
               <h2 className="font-display text-2xl font-bold">Kategori lomba</h2>
-              <Tabs defaultValue={e.competitions[0].name} className="mt-5">
+              <Tabs defaultValue={e.competitions[0]?.name} className="mt-5">
                 <TabsList className="flex h-auto flex-wrap justify-start gap-1 rounded-2xl">
                   {e.competitions.map((c) => (
                     <TabsTrigger key={c.name} value={c.name} className="rounded-xl text-xs">
