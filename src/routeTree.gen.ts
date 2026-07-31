@@ -16,6 +16,7 @@ import { Route as GaleriRouteImport } from './routes/galeri'
 import { Route as KontakRouteImport } from './routes/kontak'
 import { Route as ProgramRouteImport } from './routes/program'
 import { Route as TentangRouteImport } from './routes/tentang'
+import { Route as DaftarSlugRouteImport } from './routes/daftar.$slug'
 import { Route as EventIndexRouteImport } from './routes/event/index'
 import { Route as EventSlugRouteImport } from './routes/event/$slug'
 
@@ -54,6 +55,11 @@ const TentangRoute = TentangRouteImport.update({
   path: '/tentang',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DaftarSlugRoute = DaftarSlugRouteImport.update({
+  id: '/daftar/$slug',
+  path: '/daftar/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventIndexRoute = EventIndexRouteImport.update({
   id: '/event/',
   path: '/event/',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/event/': typeof EventIndexRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/event': typeof EventIndexRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/event/': typeof EventIndexRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/daftar/$slug'
     | '/event/$slug'
     | '/event/'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/daftar/$slug'
     | '/event/$slug'
     | '/event'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/daftar/$slug'
     | '/event/$slug'
     | '/event/'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   KontakRoute: typeof KontakRoute
   ProgramRoute: typeof ProgramRoute
   TentangRoute: typeof TentangRoute
+  DaftarSlugRoute: typeof DaftarSlugRoute
   EventSlugRoute: typeof EventSlugRoute
   EventIndexRoute: typeof EventIndexRoute
 }
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TentangRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/daftar/$slug': {
+      id: '/daftar/$slug'
+      path: '/daftar/$slug'
+      fullPath: '/daftar/$slug'
+      preLoaderRoute: typeof DaftarSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/event/': {
       id: '/event/'
       path: '/event'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   KontakRoute: KontakRoute,
   ProgramRoute: ProgramRoute,
   TentangRoute: TentangRoute,
+  DaftarSlugRoute: DaftarSlugRoute,
   EventSlugRoute: EventSlugRoute,
   EventIndexRoute: EventIndexRoute,
 }
