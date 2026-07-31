@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import { ORG, navLinks } from "@/data/gencb";
+import logoAsset from "@/assets/logo-gencb.png.asset.json";
 
 export function Footer() {
   return (
@@ -8,8 +9,15 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3">
-            <span className="glass flex size-11 items-center justify-center rounded-2xl font-display text-sm font-bold">
-              GC
+            <span className="glass flex size-14 items-center justify-center rounded-2xl p-1.5">
+              <img
+                src={logoAsset.url}
+                alt="Logo Generasi Cerdas Beraksi"
+                width={48}
+                height={48}
+                loading="lazy"
+                className="size-full object-contain"
+              />
             </span>
             <div>
               <p className="font-display text-lg font-bold">{ORG.short}</p>
