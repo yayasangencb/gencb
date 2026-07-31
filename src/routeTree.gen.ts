@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as DonasiRouteImport } from './routes/donasi'
-import { Route as EventRouteImport } from './routes/event'
 import { Route as GaleriRouteImport } from './routes/galeri'
 import { Route as KontakRouteImport } from './routes/kontak'
 import { Route as ProgramRouteImport } from './routes/program'
@@ -31,11 +30,6 @@ const BeritaRoute = BeritaRouteImport.update({
 const DonasiRoute = DonasiRouteImport.update({
   id: '/donasi',
   path: '/donasi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EventRoute = EventRouteImport.update({
-  id: '/event',
-  path: '/event',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GaleriRoute = GaleriRouteImport.update({
@@ -63,7 +57,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/berita': typeof BeritaRoute
   '/donasi': typeof DonasiRoute
-  '/event': typeof EventRoute
   '/galeri': typeof GaleriRoute
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
@@ -73,7 +66,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/berita': typeof BeritaRoute
   '/donasi': typeof DonasiRoute
-  '/event': typeof EventRoute
   '/galeri': typeof GaleriRoute
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
@@ -84,7 +76,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/berita': typeof BeritaRoute
   '/donasi': typeof DonasiRoute
-  '/event': typeof EventRoute
   '/galeri': typeof GaleriRoute
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
@@ -96,7 +87,6 @@ export interface FileRouteTypes {
     | '/'
     | '/berita'
     | '/donasi'
-    | '/event'
     | '/galeri'
     | '/kontak'
     | '/program'
@@ -106,7 +96,6 @@ export interface FileRouteTypes {
     | '/'
     | '/berita'
     | '/donasi'
-    | '/event'
     | '/galeri'
     | '/kontak'
     | '/program'
@@ -116,7 +105,6 @@ export interface FileRouteTypes {
     | '/'
     | '/berita'
     | '/donasi'
-    | '/event'
     | '/galeri'
     | '/kontak'
     | '/program'
@@ -127,7 +115,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BeritaRoute: typeof BeritaRoute
   DonasiRoute: typeof DonasiRoute
-  EventRoute: typeof EventRoute
   GaleriRoute: typeof GaleriRoute
   KontakRoute: typeof KontakRoute
   ProgramRoute: typeof ProgramRoute
@@ -155,13 +142,6 @@ declare module '@tanstack/react-router' {
       path: '/donasi'
       fullPath: '/donasi'
       preLoaderRoute: typeof DonasiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/event': {
-      id: '/event'
-      path: '/event'
-      fullPath: '/event'
-      preLoaderRoute: typeof EventRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/galeri': {
@@ -199,7 +179,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BeritaRoute: BeritaRoute,
   DonasiRoute: DonasiRoute,
-  EventRoute: EventRoute,
   GaleriRoute: GaleriRoute,
   KontakRoute: KontakRoute,
   ProgramRoute: ProgramRoute,
