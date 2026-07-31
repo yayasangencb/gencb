@@ -147,7 +147,7 @@ function EventPage() {
                       </Button>
                       {e.status === "OPEN" ? (
                         <Button asChild variant="hero" size="sm" className="flex-1">
-                          <Link to="/event/$slug/daftar" params={{ slug: e.slug }}>
+                          <Link to="/daftar/$slug" params={{ slug: e.slug }}>
                             Daftar
                           </Link>
                         </Button>

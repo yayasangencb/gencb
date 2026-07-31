@@ -128,7 +128,7 @@ function EventDetail() {
             <div className="mt-8 flex flex-wrap gap-3">
               {e.status === "OPEN" ? (
                 <Button asChild variant="accent" size="xl">
-                  <Link to="/event/$slug/daftar" params={{ slug: e.slug }}>
+                  <Link to="/daftar/$slug" params={{ slug: e.slug }}>
                     Daftar Sekarang
                   </Link>
                 </Button>
