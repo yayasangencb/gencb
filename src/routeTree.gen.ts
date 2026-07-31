@@ -17,6 +17,7 @@ import { Route as KontakRouteImport } from './routes/kontak'
 import { Route as ProgramRouteImport } from './routes/program'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as EventIndexRouteImport } from './routes/event/index'
+import { Route as EventSlugRouteImport } from './routes/event/$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const EventIndexRoute = EventIndexRouteImport.update({
   path: '/event/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventSlugRoute = EventSlugRouteImport.update({
+  id: '/event/$slug',
+  path: '/event/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/event/$slug': typeof EventSlugRoute
   '/event/': typeof EventIndexRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/event/$slug': typeof EventSlugRoute
   '/event': typeof EventIndexRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/event/$slug': typeof EventSlugRoute
   '/event/': typeof EventIndexRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/event/$slug'
     | '/event/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/event/$slug'
     | '/event'
   id:
     | '__root__'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/event/$slug'
     | '/event/'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   KontakRoute: typeof KontakRoute
   ProgramRoute: typeof ProgramRoute
   TentangRoute: typeof TentangRoute
+  EventSlugRoute: typeof EventSlugRoute
   EventIndexRoute: typeof EventIndexRoute
 }
 
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/event/$slug': {
+      id: '/event/$slug'
+      path: '/event/$slug'
+      fullPath: '/event/$slug'
+      preLoaderRoute: typeof EventSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   KontakRoute: KontakRoute,
   ProgramRoute: ProgramRoute,
   TentangRoute: TentangRoute,
+  EventSlugRoute: EventSlugRoute,
   EventIndexRoute: EventIndexRoute,
 }
 export const routeTree = rootRouteImport

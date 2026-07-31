@@ -27,7 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Countdown } from "@/components/site/countdown";
 import { Reveal } from "@/components/site/reveal";
 import { StatusBadge } from "@/components/site/status-badge";
-import { getEvent, formatRupiah } from "@/data/events";
+import { getEvent, formatRupiah, type GencbEvent } from "@/data/events";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/event/$slug")({
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/event/$slug")({
 type Comment = { name: string; message: string; time: string };
 
 function EventDetail() {
-  const e = Route.useLoaderData();
+  const e = Route.useLoaderData() as GencbEvent;
   const [comments, setComments] = useState<Comment[]>([
     {
       name: "Rani Aprilia",
