@@ -38,7 +38,8 @@ function Index() {
           height={1000}
           className="absolute inset-0 size-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-brand opacity-90" />
+        <div className="absolute inset-0 bg-gradient-brand opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
         <motion.div
           aria-hidden
           animate={{ y: [0, -24, 0] }}
