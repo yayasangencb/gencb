@@ -19,7 +19,13 @@ import { Route as KontakRouteImport } from './routes/kontak'
 import { Route as ProgramRouteImport } from './routes/program'
 import { Route as TentangRouteImport } from './routes/tentang'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminBannerRouteImport } from './routes/admin/banner'
+import { Route as AdminBeritaRouteImport } from './routes/admin/berita'
+import { Route as AdminEventRouteImport } from './routes/admin/event'
+import { Route as AdminGaleriRouteImport } from './routes/admin/galeri'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminProgramRouteImport } from './routes/admin/program'
+import { Route as AdminSponsorRouteImport } from './routes/admin/sponsor'
 import { Route as DaftarSlugRouteImport } from './routes/daftar.$slug'
 import { Route as EventIndexRouteImport } from './routes/event/index'
 import { Route as EventSlugRouteImport } from './routes/event/$slug'
@@ -74,9 +80,39 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminBannerRoute = AdminBannerRouteImport.update({
+  id: '/banner',
+  path: '/banner',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminBeritaRoute = AdminBeritaRouteImport.update({
+  id: '/berita',
+  path: '/berita',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminEventRoute = AdminEventRouteImport.update({
+  id: '/event',
+  path: '/event',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminGaleriRoute = AdminGaleriRouteImport.update({
+  id: '/galeri',
+  path: '/galeri',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminProgramRoute = AdminProgramRouteImport.update({
+  id: '/program',
+  path: '/program',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSponsorRoute = AdminSponsorRouteImport.update({
+  id: '/sponsor',
+  path: '/sponsor',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const DaftarSlugRoute = DaftarSlugRouteImport.update({
@@ -105,7 +141,13 @@ export interface FileRoutesByFullPath {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/banner': typeof AdminBannerRoute
+  '/admin/berita': typeof AdminBeritaRoute
+  '/admin/event': typeof AdminEventRoute
+  '/admin/galeri': typeof AdminGaleriRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/program': typeof AdminProgramRoute
+  '/admin/sponsor': typeof AdminSponsorRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -120,7 +162,13 @@ export interface FileRoutesByTo {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/banner': typeof AdminBannerRoute
+  '/admin/berita': typeof AdminBeritaRoute
+  '/admin/event': typeof AdminEventRoute
+  '/admin/galeri': typeof AdminGaleriRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/program': typeof AdminProgramRoute
+  '/admin/sponsor': typeof AdminSponsorRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -137,7 +185,13 @@ export interface FileRoutesById {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/banner': typeof AdminBannerRoute
+  '/admin/berita': typeof AdminBeritaRoute
+  '/admin/event': typeof AdminEventRoute
+  '/admin/galeri': typeof AdminGaleriRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/program': typeof AdminProgramRoute
+  '/admin/sponsor': typeof AdminSponsorRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -155,7 +209,13 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/banner'
+    | '/admin/berita'
+    | '/admin/event'
+    | '/admin/galeri'
     | '/admin/login'
+    | '/admin/program'
+    | '/admin/sponsor'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin/'
@@ -170,7 +230,13 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/banner'
+    | '/admin/berita'
+    | '/admin/event'
+    | '/admin/galeri'
     | '/admin/login'
+    | '/admin/program'
+    | '/admin/sponsor'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin'
@@ -186,7 +252,13 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/banner'
+    | '/admin/berita'
+    | '/admin/event'
+    | '/admin/galeri'
     | '/admin/login'
+    | '/admin/program'
+    | '/admin/sponsor'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin/'
@@ -280,11 +352,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/banner': {
+      id: '/admin/banner'
+      path: '/banner'
+      fullPath: '/admin/banner'
+      preLoaderRoute: typeof AdminBannerRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/berita': {
+      id: '/admin/berita'
+      path: '/berita'
+      fullPath: '/admin/berita'
+      preLoaderRoute: typeof AdminBeritaRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/event': {
+      id: '/admin/event'
+      path: '/event'
+      fullPath: '/admin/event'
+      preLoaderRoute: typeof AdminEventRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/galeri': {
+      id: '/admin/galeri'
+      path: '/galeri'
+      fullPath: '/admin/galeri'
+      preLoaderRoute: typeof AdminGaleriRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/program': {
+      id: '/admin/program'
+      path: '/program'
+      fullPath: '/admin/program'
+      preLoaderRoute: typeof AdminProgramRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/sponsor': {
+      id: '/admin/sponsor'
+      path: '/sponsor'
+      fullPath: '/admin/sponsor'
+      preLoaderRoute: typeof AdminSponsorRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/daftar/$slug': {
@@ -312,12 +426,24 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteRouteChildren {
+  AdminBannerRoute: typeof AdminBannerRoute
+  AdminBeritaRoute: typeof AdminBeritaRoute
+  AdminEventRoute: typeof AdminEventRoute
+  AdminGaleriRoute: typeof AdminGaleriRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminProgramRoute: typeof AdminProgramRoute
+  AdminSponsorRoute: typeof AdminSponsorRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminBannerRoute: AdminBannerRoute,
+  AdminBeritaRoute: AdminBeritaRoute,
+  AdminEventRoute: AdminEventRoute,
+  AdminGaleriRoute: AdminGaleriRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminProgramRoute: AdminProgramRoute,
+  AdminSponsorRoute: AdminSponsorRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
