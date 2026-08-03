@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DonasiRouteImport } from './routes/donasi'
@@ -17,6 +18,8 @@ import { Route as GaleriRouteImport } from './routes/galeri'
 import { Route as KontakRouteImport } from './routes/kontak'
 import { Route as ProgramRouteImport } from './routes/program'
 import { Route as TentangRouteImport } from './routes/tentang'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as DaftarSlugRouteImport } from './routes/daftar.$slug'
 import { Route as EventIndexRouteImport } from './routes/event/index'
 import { Route as EventSlugRouteImport } from './routes/event/$slug'
@@ -24,6 +27,11 @@ import { Route as EventSlugRouteImport } from './routes/event/$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BeritaRoute = BeritaRouteImport.update({
@@ -61,6 +69,16 @@ const TentangRoute = TentangRouteImport.update({
   path: '/tentang',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const DaftarSlugRoute = DaftarSlugRouteImport.update({
   id: '/daftar/$slug',
   path: '/daftar/$slug',
@@ -79,6 +97,7 @@ const EventSlugRoute = EventSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/berita': typeof BeritaRoute
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
@@ -86,8 +105,10 @@ export interface FileRoutesByFullPath {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/login': typeof AdminLoginRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/event/': typeof EventIndexRoute
 }
 export interface FileRoutesByTo {
@@ -99,13 +120,16 @@ export interface FileRoutesByTo {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/login': typeof AdminLoginRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/event': typeof EventIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/berita': typeof BeritaRoute
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
@@ -113,14 +137,17 @@ export interface FileRoutesById {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/login': typeof AdminLoginRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/event/': typeof EventIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/berita'
     | '/dashboard'
     | '/donasi'
@@ -128,8 +155,10 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/login'
     | '/daftar/$slug'
     | '/event/$slug'
+    | '/admin/'
     | '/event/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -141,12 +170,15 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/login'
     | '/daftar/$slug'
     | '/event/$slug'
+    | '/admin'
     | '/event'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/berita'
     | '/dashboard'
     | '/donasi'
@@ -154,13 +186,16 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/login'
     | '/daftar/$slug'
     | '/event/$slug'
+    | '/admin/'
     | '/event/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   BeritaRoute: typeof BeritaRoute
   DashboardRoute: typeof DashboardRoute
   DonasiRoute: typeof DonasiRoute
@@ -180,6 +215,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/berita': {
@@ -231,6 +273,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TentangRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/daftar/$slug': {
       id: '/daftar/$slug'
       path: '/daftar/$slug'
@@ -255,8 +311,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminLoginRoute: AdminLoginRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   BeritaRoute: BeritaRoute,
   DashboardRoute: DashboardRoute,
   DonasiRoute: DonasiRoute,
