@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DonasiRouteImport } from './routes/donasi'
@@ -17,6 +18,21 @@ import { Route as GaleriRouteImport } from './routes/galeri'
 import { Route as KontakRouteImport } from './routes/kontak'
 import { Route as ProgramRouteImport } from './routes/program'
 import { Route as TentangRouteImport } from './routes/tentang'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAbsensiRouteImport } from './routes/admin/absensi'
+import { Route as AdminBannerRouteImport } from './routes/admin/banner'
+import { Route as AdminBeritaRouteImport } from './routes/admin/berita'
+import { Route as AdminDonasiRouteImport } from './routes/admin/donasi'
+import { Route as AdminEventRouteImport } from './routes/admin/event'
+import { Route as AdminGaleriRouteImport } from './routes/admin/galeri'
+import { Route as AdminLiveRouteImport } from './routes/admin/live'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminNotifikasiRouteImport } from './routes/admin/notifikasi'
+import { Route as AdminPendaftarRouteImport } from './routes/admin/pendaftar'
+import { Route as AdminProgramRouteImport } from './routes/admin/program'
+import { Route as AdminSertifikatRouteImport } from './routes/admin/sertifikat'
+import { Route as AdminSponsorRouteImport } from './routes/admin/sponsor'
+import { Route as AdminUserRouteImport } from './routes/admin/user'
 import { Route as DaftarSlugRouteImport } from './routes/daftar.$slug'
 import { Route as EventIndexRouteImport } from './routes/event/index'
 import { Route as EventSlugRouteImport } from './routes/event/$slug'
@@ -24,6 +40,11 @@ import { Route as EventSlugRouteImport } from './routes/event/$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BeritaRoute = BeritaRouteImport.update({
@@ -61,6 +82,81 @@ const TentangRoute = TentangRouteImport.update({
   path: '/tentang',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAbsensiRoute = AdminAbsensiRouteImport.update({
+  id: '/absensi',
+  path: '/absensi',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminBannerRoute = AdminBannerRouteImport.update({
+  id: '/banner',
+  path: '/banner',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminBeritaRoute = AdminBeritaRouteImport.update({
+  id: '/berita',
+  path: '/berita',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminDonasiRoute = AdminDonasiRouteImport.update({
+  id: '/donasi',
+  path: '/donasi',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminEventRoute = AdminEventRouteImport.update({
+  id: '/event',
+  path: '/event',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminGaleriRoute = AdminGaleriRouteImport.update({
+  id: '/galeri',
+  path: '/galeri',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLiveRoute = AdminLiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminNotifikasiRoute = AdminNotifikasiRouteImport.update({
+  id: '/notifikasi',
+  path: '/notifikasi',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminPendaftarRoute = AdminPendaftarRouteImport.update({
+  id: '/pendaftar',
+  path: '/pendaftar',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminProgramRoute = AdminProgramRouteImport.update({
+  id: '/program',
+  path: '/program',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSertifikatRoute = AdminSertifikatRouteImport.update({
+  id: '/sertifikat',
+  path: '/sertifikat',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSponsorRoute = AdminSponsorRouteImport.update({
+  id: '/sponsor',
+  path: '/sponsor',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUserRoute = AdminUserRouteImport.update({
+  id: '/user',
+  path: '/user',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const DaftarSlugRoute = DaftarSlugRouteImport.update({
   id: '/daftar/$slug',
   path: '/daftar/$slug',
@@ -79,6 +175,7 @@ const EventSlugRoute = EventSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/berita': typeof BeritaRoute
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
@@ -86,8 +183,23 @@ export interface FileRoutesByFullPath {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/absensi': typeof AdminAbsensiRoute
+  '/admin/banner': typeof AdminBannerRoute
+  '/admin/berita': typeof AdminBeritaRoute
+  '/admin/donasi': typeof AdminDonasiRoute
+  '/admin/event': typeof AdminEventRoute
+  '/admin/galeri': typeof AdminGaleriRoute
+  '/admin/live': typeof AdminLiveRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/notifikasi': typeof AdminNotifikasiRoute
+  '/admin/pendaftar': typeof AdminPendaftarRoute
+  '/admin/program': typeof AdminProgramRoute
+  '/admin/sertifikat': typeof AdminSertifikatRoute
+  '/admin/sponsor': typeof AdminSponsorRoute
+  '/admin/user': typeof AdminUserRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/event/': typeof EventIndexRoute
 }
 export interface FileRoutesByTo {
@@ -99,13 +211,29 @@ export interface FileRoutesByTo {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/absensi': typeof AdminAbsensiRoute
+  '/admin/banner': typeof AdminBannerRoute
+  '/admin/berita': typeof AdminBeritaRoute
+  '/admin/donasi': typeof AdminDonasiRoute
+  '/admin/event': typeof AdminEventRoute
+  '/admin/galeri': typeof AdminGaleriRoute
+  '/admin/live': typeof AdminLiveRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/notifikasi': typeof AdminNotifikasiRoute
+  '/admin/pendaftar': typeof AdminPendaftarRoute
+  '/admin/program': typeof AdminProgramRoute
+  '/admin/sertifikat': typeof AdminSertifikatRoute
+  '/admin/sponsor': typeof AdminSponsorRoute
+  '/admin/user': typeof AdminUserRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/event': typeof EventIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/berita': typeof BeritaRoute
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
@@ -113,14 +241,30 @@ export interface FileRoutesById {
   '/kontak': typeof KontakRoute
   '/program': typeof ProgramRoute
   '/tentang': typeof TentangRoute
+  '/admin/absensi': typeof AdminAbsensiRoute
+  '/admin/banner': typeof AdminBannerRoute
+  '/admin/berita': typeof AdminBeritaRoute
+  '/admin/donasi': typeof AdminDonasiRoute
+  '/admin/event': typeof AdminEventRoute
+  '/admin/galeri': typeof AdminGaleriRoute
+  '/admin/live': typeof AdminLiveRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/notifikasi': typeof AdminNotifikasiRoute
+  '/admin/pendaftar': typeof AdminPendaftarRoute
+  '/admin/program': typeof AdminProgramRoute
+  '/admin/sertifikat': typeof AdminSertifikatRoute
+  '/admin/sponsor': typeof AdminSponsorRoute
+  '/admin/user': typeof AdminUserRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/event/': typeof EventIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/berita'
     | '/dashboard'
     | '/donasi'
@@ -128,8 +272,23 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/absensi'
+    | '/admin/banner'
+    | '/admin/berita'
+    | '/admin/donasi'
+    | '/admin/event'
+    | '/admin/galeri'
+    | '/admin/live'
+    | '/admin/login'
+    | '/admin/notifikasi'
+    | '/admin/pendaftar'
+    | '/admin/program'
+    | '/admin/sertifikat'
+    | '/admin/sponsor'
+    | '/admin/user'
     | '/daftar/$slug'
     | '/event/$slug'
+    | '/admin/'
     | '/event/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -141,12 +300,28 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/absensi'
+    | '/admin/banner'
+    | '/admin/berita'
+    | '/admin/donasi'
+    | '/admin/event'
+    | '/admin/galeri'
+    | '/admin/live'
+    | '/admin/login'
+    | '/admin/notifikasi'
+    | '/admin/pendaftar'
+    | '/admin/program'
+    | '/admin/sertifikat'
+    | '/admin/sponsor'
+    | '/admin/user'
     | '/daftar/$slug'
     | '/event/$slug'
+    | '/admin'
     | '/event'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/berita'
     | '/dashboard'
     | '/donasi'
@@ -154,13 +329,29 @@ export interface FileRouteTypes {
     | '/kontak'
     | '/program'
     | '/tentang'
+    | '/admin/absensi'
+    | '/admin/banner'
+    | '/admin/berita'
+    | '/admin/donasi'
+    | '/admin/event'
+    | '/admin/galeri'
+    | '/admin/live'
+    | '/admin/login'
+    | '/admin/notifikasi'
+    | '/admin/pendaftar'
+    | '/admin/program'
+    | '/admin/sertifikat'
+    | '/admin/sponsor'
+    | '/admin/user'
     | '/daftar/$slug'
     | '/event/$slug'
+    | '/admin/'
     | '/event/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   BeritaRoute: typeof BeritaRoute
   DashboardRoute: typeof DashboardRoute
   DonasiRoute: typeof DonasiRoute
@@ -180,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/berita': {
@@ -231,6 +429,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TentangRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/absensi': {
+      id: '/admin/absensi'
+      path: '/absensi'
+      fullPath: '/admin/absensi'
+      preLoaderRoute: typeof AdminAbsensiRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/banner': {
+      id: '/admin/banner'
+      path: '/banner'
+      fullPath: '/admin/banner'
+      preLoaderRoute: typeof AdminBannerRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/berita': {
+      id: '/admin/berita'
+      path: '/berita'
+      fullPath: '/admin/berita'
+      preLoaderRoute: typeof AdminBeritaRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/donasi': {
+      id: '/admin/donasi'
+      path: '/donasi'
+      fullPath: '/admin/donasi'
+      preLoaderRoute: typeof AdminDonasiRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/event': {
+      id: '/admin/event'
+      path: '/event'
+      fullPath: '/admin/event'
+      preLoaderRoute: typeof AdminEventRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/galeri': {
+      id: '/admin/galeri'
+      path: '/galeri'
+      fullPath: '/admin/galeri'
+      preLoaderRoute: typeof AdminGaleriRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/live': {
+      id: '/admin/live'
+      path: '/live'
+      fullPath: '/admin/live'
+      preLoaderRoute: typeof AdminLiveRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/notifikasi': {
+      id: '/admin/notifikasi'
+      path: '/notifikasi'
+      fullPath: '/admin/notifikasi'
+      preLoaderRoute: typeof AdminNotifikasiRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/pendaftar': {
+      id: '/admin/pendaftar'
+      path: '/pendaftar'
+      fullPath: '/admin/pendaftar'
+      preLoaderRoute: typeof AdminPendaftarRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/program': {
+      id: '/admin/program'
+      path: '/program'
+      fullPath: '/admin/program'
+      preLoaderRoute: typeof AdminProgramRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/sertifikat': {
+      id: '/admin/sertifikat'
+      path: '/sertifikat'
+      fullPath: '/admin/sertifikat'
+      preLoaderRoute: typeof AdminSertifikatRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/sponsor': {
+      id: '/admin/sponsor'
+      path: '/sponsor'
+      fullPath: '/admin/sponsor'
+      preLoaderRoute: typeof AdminSponsorRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/user': {
+      id: '/admin/user'
+      path: '/user'
+      fullPath: '/admin/user'
+      preLoaderRoute: typeof AdminUserRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/daftar/$slug': {
       id: '/daftar/$slug'
       path: '/daftar/$slug'
@@ -255,8 +558,49 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminAbsensiRoute: typeof AdminAbsensiRoute
+  AdminBannerRoute: typeof AdminBannerRoute
+  AdminBeritaRoute: typeof AdminBeritaRoute
+  AdminDonasiRoute: typeof AdminDonasiRoute
+  AdminEventRoute: typeof AdminEventRoute
+  AdminGaleriRoute: typeof AdminGaleriRoute
+  AdminLiveRoute: typeof AdminLiveRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminNotifikasiRoute: typeof AdminNotifikasiRoute
+  AdminPendaftarRoute: typeof AdminPendaftarRoute
+  AdminProgramRoute: typeof AdminProgramRoute
+  AdminSertifikatRoute: typeof AdminSertifikatRoute
+  AdminSponsorRoute: typeof AdminSponsorRoute
+  AdminUserRoute: typeof AdminUserRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAbsensiRoute: AdminAbsensiRoute,
+  AdminBannerRoute: AdminBannerRoute,
+  AdminBeritaRoute: AdminBeritaRoute,
+  AdminDonasiRoute: AdminDonasiRoute,
+  AdminEventRoute: AdminEventRoute,
+  AdminGaleriRoute: AdminGaleriRoute,
+  AdminLiveRoute: AdminLiveRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminNotifikasiRoute: AdminNotifikasiRoute,
+  AdminPendaftarRoute: AdminPendaftarRoute,
+  AdminProgramRoute: AdminProgramRoute,
+  AdminSertifikatRoute: AdminSertifikatRoute,
+  AdminSponsorRoute: AdminSponsorRoute,
+  AdminUserRoute: AdminUserRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   BeritaRoute: BeritaRoute,
   DashboardRoute: DashboardRoute,
   DonasiRoute: DonasiRoute,
