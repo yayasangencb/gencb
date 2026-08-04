@@ -43,12 +43,13 @@ export function listRegistrations(): Registration[] {
 
 export function saveRegistration(
   data: Omit<Registration, "id" | "number" | "status" | "createdAt">,
+  participantNumber?: string | null,
 ): Registration {
   const all = listRegistrations();
   const entry: Registration = {
     ...data,
     id: crypto.randomUUID(),
-    number: generateParticipantNumber(all.length),
+    number: participantNumber || generateParticipantNumber(all.length),
     status: "PENDING",
     createdAt: new Date().toISOString(),
   };
