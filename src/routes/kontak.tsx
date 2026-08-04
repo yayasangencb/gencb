@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { submitContactMessage } from "@/lib/cloud/public-forms";
 import { PageHero } from "@/components/site/page-hero";
 import { Reveal } from "@/components/site/reveal";
 import { Button } from "@/components/ui/button";
@@ -67,12 +68,25 @@ function KontakPage() {
 
           <Reveal delay={0.1}>
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
+                const formEl = e.currentTarget;
+                const fd = new FormData(formEl);
+                const ok = await submitContactMessage({
+                  name: String(fd.get("nama") ?? ""),
+                  email: String(fd.get("email") ?? ""),
+                  message: `${String(fd.get("subjek") ?? "")}\n\n${String(fd.get("pesan") ?? "")}`,
+                });
+                if (!ok) {
+                  toast.error("Pesan gagal terkirim", {
+                    description: "Silakan coba lagi beberapa saat lagi.",
+                  });
+                  return;
+                }
                 toast.success("Pesan terkirim", {
                   description: "Terima kasih, tim GEN-CB akan segera menghubungi Anda.",
                 });
-                (e.target as HTMLFormElement).reset();
+                formEl.reset();
               }}
               className="space-y-5 rounded-3xl border border-border/60 bg-card p-8 shadow-soft"
             >
@@ -80,20 +94,20 @@ function KontakPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="nama">Nama Lengkap</Label>
-                  <Input id="nama" required placeholder="Nama Anda" />
+                  <Input id="nama" name="nama" required placeholder="Nama Anda" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" required placeholder="nama@email.com" />
+                  <Input id="email" name="email" type="email" required placeholder="nama@email.com" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="subjek">Subjek</Label>
-                <Input id="subjek" required placeholder="Kerja sama / relawan / lainnya" />
+                <Input id="subjek" name="subjek" required placeholder="Kerja sama / relawan / lainnya" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pesan">Pesan</Label>
-                <Textarea id="pesan" required rows={6} placeholder="Tulis pesan Anda..." />
+                <Textarea id="pesan" name="pesan" required rows={6} placeholder="Tulis pesan Anda..." />
               </div>
               <Button type="submit" variant="hero" size="lg" className="w-full">
                 Kirim Pesan

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { getEvent, formatRupiah, type GencbEvent } from "@/data/events";
 import { saveRegistration } from "@/lib/registrations";
+import { submitRegistrationToCloud } from "@/lib/cloud/public-forms";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/daftar/$slug")({
@@ -122,11 +123,29 @@ function RegistrationPage() {
     return Object.keys(next).length === 0;
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!validate(3)) {
       toast.error("Lengkapi persetujuan terlebih dahulu");
       return;
     }
+    const cloud = await submitRegistrationToCloud({
+      eventSlug: event.slug,
+      fullName: form.fullName,
+      nik: form.nik,
+      birthPlace: form.birthPlace,
+      birthDate: form.birthDate,
+      gender: form.gender,
+      address: form.address,
+      rw: form.rw,
+      phone: form.phone,
+      email: form.email,
+      school: form.school,
+      competition: form.competition || "-",
+      hasKtp: !!form.ktp,
+      hasKk: !!form.kk,
+      hasPhoto: !!form.photo,
+      hasPayment: !!form.payment,
+    });
     const entry = saveRegistration({
       eventSlug: event.slug,
       eventTitle: event.title,
@@ -143,7 +162,7 @@ function RegistrationPage() {
       school: form.school,
       competition: form.competition || "-",
       documents: { ktp: form.ktp, kk: form.kk, photo: form.photo, payment: form.payment },
-    });
+    }, cloud?.participant_number);
     toast.success(`Pendaftaran berhasil — nomor peserta ${entry.number}`);
     navigate({ to: "/dashboard", search: { id: entry.id } });
   };
