@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { submitContactMessage } from "@/lib/cloud/public-forms";
 import { PageHero } from "@/components/site/page-hero";
 import { Reveal } from "@/components/site/reveal";
 import { Button } from "@/components/ui/button";
