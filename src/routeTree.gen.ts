@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
-import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DonasiRouteImport } from './routes/donasi'
 import { Route as GaleriRouteImport } from './routes/galeri'
@@ -33,7 +32,8 @@ import { Route as AdminProgramRouteImport } from './routes/admin/program'
 import { Route as AdminSertifikatRouteImport } from './routes/admin/sertifikat'
 import { Route as AdminSponsorRouteImport } from './routes/admin/sponsor'
 import { Route as AdminUserRouteImport } from './routes/admin/user'
-import { Route as BeritaSlugRouteImport } from './routes/berita.$slug'
+import { Route as BeritaIndexRouteImport } from './routes/berita/index'
+import { Route as BeritaSlugRouteImport } from './routes/berita/$slug'
 import { Route as DaftarSlugRouteImport } from './routes/daftar.$slug'
 import { Route as EventIndexRouteImport } from './routes/event/index'
 import { Route as EventSlugRouteImport } from './routes/event/$slug'
@@ -46,11 +46,6 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BeritaRoute = BeritaRouteImport.update({
-  id: '/berita',
-  path: '/berita',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -158,10 +153,15 @@ const AdminUserRoute = AdminUserRouteImport.update({
   path: '/user',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const BeritaIndexRoute = BeritaIndexRouteImport.update({
+  id: '/berita/',
+  path: '/berita/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BeritaSlugRoute = BeritaSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BeritaRoute,
+  id: '/berita/$slug',
+  path: '/berita/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DaftarSlugRoute = DaftarSlugRouteImport.update({
   id: '/daftar/$slug',
@@ -182,7 +182,6 @@ const EventSlugRoute = EventSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/berita': typeof BeritaRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -207,11 +206,11 @@ export interface FileRoutesByFullPath {
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/berita/': typeof BeritaIndexRoute
   '/event/': typeof EventIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/berita': typeof BeritaRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -236,13 +235,13 @@ export interface FileRoutesByTo {
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/berita': typeof BeritaIndexRoute
   '/event': typeof EventIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/berita': typeof BeritaRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -267,6 +266,7 @@ export interface FileRoutesById {
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/berita/': typeof BeritaIndexRoute
   '/event/': typeof EventIndexRoute
 }
 export interface FileRouteTypes {
@@ -274,7 +274,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/berita'
     | '/dashboard'
     | '/donasi'
     | '/galeri'
@@ -299,11 +298,11 @@ export interface FileRouteTypes {
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin/'
+    | '/berita/'
     | '/event/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/berita'
     | '/dashboard'
     | '/donasi'
     | '/galeri'
@@ -328,12 +327,12 @@ export interface FileRouteTypes {
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin'
+    | '/berita'
     | '/event'
   id:
     | '__root__'
     | '/'
     | '/admin'
-    | '/berita'
     | '/dashboard'
     | '/donasi'
     | '/galeri'
@@ -358,21 +357,23 @@ export interface FileRouteTypes {
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin/'
+    | '/berita/'
     | '/event/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
-  BeritaRoute: typeof BeritaRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   DonasiRoute: typeof DonasiRoute
   GaleriRoute: typeof GaleriRoute
   KontakRoute: typeof KontakRoute
   ProgramRoute: typeof ProgramRoute
   TentangRoute: typeof TentangRoute
+  BeritaSlugRoute: typeof BeritaSlugRoute
   DaftarSlugRoute: typeof DaftarSlugRoute
   EventSlugRoute: typeof EventSlugRoute
+  BeritaIndexRoute: typeof BeritaIndexRoute
   EventIndexRoute: typeof EventIndexRoute
 }
 
@@ -390,13 +391,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/berita': {
-      id: '/berita'
-      path: '/berita'
-      fullPath: '/berita'
-      preLoaderRoute: typeof BeritaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -546,12 +540,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUserRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/berita/': {
+      id: '/berita/'
+      path: '/berita'
+      fullPath: '/berita/'
+      preLoaderRoute: typeof BeritaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/berita/$slug': {
       id: '/berita/$slug'
-      path: '/$slug'
+      path: '/berita/$slug'
       fullPath: '/berita/$slug'
       preLoaderRoute: typeof BeritaSlugRouteImport
-      parentRoute: typeof BeritaRoute
+      parentRoute: typeof rootRouteImport
     }
     '/daftar/$slug': {
       id: '/daftar/$slug'
@@ -617,29 +618,19 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
 )
 
-interface BeritaRouteChildren {
-  BeritaSlugRoute: typeof BeritaSlugRoute
-}
-
-const BeritaRouteChildren: BeritaRouteChildren = {
-  BeritaSlugRoute: BeritaSlugRoute,
-}
-
-const BeritaRouteWithChildren =
-  BeritaRoute._addFileChildren(BeritaRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
-  BeritaRoute: BeritaRouteWithChildren,
   DashboardRoute: DashboardRoute,
   DonasiRoute: DonasiRoute,
   GaleriRoute: GaleriRoute,
   KontakRoute: KontakRoute,
   ProgramRoute: ProgramRoute,
   TentangRoute: TentangRoute,
+  BeritaSlugRoute: BeritaSlugRoute,
   DaftarSlugRoute: DaftarSlugRoute,
   EventSlugRoute: EventSlugRoute,
+  BeritaIndexRoute: BeritaIndexRoute,
   EventIndexRoute: EventIndexRoute,
 }
 export const routeTree = rootRouteImport
