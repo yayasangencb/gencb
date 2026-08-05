@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,15 +82,15 @@ export function GlobalSearch() {
                     {results
                       .filter((r) => r.type === type)
                       .map((r) => (
-                        <Link
+                        <a
                           key={`${r.type}-${r.href}-${r.title}`}
-                          to={r.href}
+                          href={r.href}
                           onClick={() => setOpen(false)}
                           className="block rounded-xl px-3 py-2 transition-colors hover:bg-secondary"
                         >
                           <span className="block text-sm font-medium">{r.title}</span>
                           <span className="block text-xs text-muted-foreground">{r.subtitle}</span>
-                        </Link>
+                        </a>
                       ))}
                   </div>
                 ))
