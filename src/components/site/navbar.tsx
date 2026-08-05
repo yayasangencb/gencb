@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { navLinks } from "@/data/gencb";
+import { GlobalSearch } from "@/components/site/global-search";
 import logoAsset from "@/assets/logo-gencb.png.asset.json";
 import { cn } from "@/lib/utils";
 
@@ -71,6 +72,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <GlobalSearch />
           <Button variant="ghost" size="icon" aria-label="Ubah tema" onClick={toggleTheme}>
             {dark ? <Sun /> : <Moon />}
           </Button>
