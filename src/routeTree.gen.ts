@@ -33,6 +33,7 @@ import { Route as AdminProgramRouteImport } from './routes/admin/program'
 import { Route as AdminSertifikatRouteImport } from './routes/admin/sertifikat'
 import { Route as AdminSponsorRouteImport } from './routes/admin/sponsor'
 import { Route as AdminUserRouteImport } from './routes/admin/user'
+import { Route as BeritaSlugRouteImport } from './routes/berita.$slug'
 import { Route as DaftarSlugRouteImport } from './routes/daftar.$slug'
 import { Route as EventIndexRouteImport } from './routes/event/index'
 import { Route as EventSlugRouteImport } from './routes/event/$slug'
@@ -157,6 +158,11 @@ const AdminUserRoute = AdminUserRouteImport.update({
   path: '/user',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const BeritaSlugRoute = BeritaSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BeritaRoute,
+} as any)
 const DaftarSlugRoute = DaftarSlugRouteImport.update({
   id: '/daftar/$slug',
   path: '/daftar/$slug',
@@ -176,7 +182,7 @@ const EventSlugRoute = EventSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/berita': typeof BeritaRoute
+  '/berita': typeof BeritaRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/admin/sertifikat': typeof AdminSertifikatRoute
   '/admin/sponsor': typeof AdminSponsorRoute
   '/admin/user': typeof AdminUserRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -204,7 +211,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/berita': typeof BeritaRoute
+  '/berita': typeof BeritaRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -225,6 +232,7 @@ export interface FileRoutesByTo {
   '/admin/sertifikat': typeof AdminSertifikatRoute
   '/admin/sponsor': typeof AdminSponsorRoute
   '/admin/user': typeof AdminUserRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -234,7 +242,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/berita': typeof BeritaRoute
+  '/berita': typeof BeritaRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/admin/sertifikat': typeof AdminSertifikatRoute
   '/admin/sponsor': typeof AdminSponsorRoute
   '/admin/user': typeof AdminUserRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/admin/sertifikat'
     | '/admin/sponsor'
     | '/admin/user'
+    | '/berita/$slug'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin/'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/admin/sertifikat'
     | '/admin/sponsor'
     | '/admin/user'
+    | '/berita/$slug'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/admin/sertifikat'
     | '/admin/sponsor'
     | '/admin/user'
+    | '/berita/$slug'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin/'
@@ -352,7 +364,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
-  BeritaRoute: typeof BeritaRoute
+  BeritaRoute: typeof BeritaRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   DonasiRoute: typeof DonasiRoute
   GaleriRoute: typeof GaleriRoute
@@ -534,6 +546,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUserRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/berita/$slug': {
+      id: '/berita/$slug'
+      path: '/$slug'
+      fullPath: '/berita/$slug'
+      preLoaderRoute: typeof BeritaSlugRouteImport
+      parentRoute: typeof BeritaRoute
+    }
     '/daftar/$slug': {
       id: '/daftar/$slug'
       path: '/daftar/$slug'
@@ -598,10 +617,21 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
 )
 
+interface BeritaRouteChildren {
+  BeritaSlugRoute: typeof BeritaSlugRoute
+}
+
+const BeritaRouteChildren: BeritaRouteChildren = {
+  BeritaSlugRoute: BeritaSlugRoute,
+}
+
+const BeritaRouteWithChildren =
+  BeritaRoute._addFileChildren(BeritaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
-  BeritaRoute: BeritaRoute,
+  BeritaRoute: BeritaRouteWithChildren,
   DashboardRoute: DashboardRoute,
   DonasiRoute: DonasiRoute,
   GaleriRoute: GaleriRoute,
@@ -615,13 +645,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

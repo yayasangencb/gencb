@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { fetchNewsList, formatDateId, NEWS_CATEGORIES } from "@/lib/cloud/public-data";
 
-export const Route = createFileRoute("/berita")({
+export const Route = createFileRoute("/berita/")({
   head: () => ({
     meta: [
       { title: "Berita — GEN-CB" },
