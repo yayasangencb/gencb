@@ -75,7 +75,9 @@ export function Navbar() {
             {dark ? <Sun /> : <Moon />}
           </Button>
           <Button asChild variant="ghost" size="sm" className="hidden lg:inline-flex">
-            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/dashboard" search={{ id: undefined }}>
+              Dashboard
+            </Link>
           </Button>
           <Button asChild variant="hero" size="sm" className="hidden sm:inline-flex">
             <Link to="/event">Daftar Kegiatan</Link>

@@ -157,7 +157,7 @@ export async function globalSearch(term: string): Promise<SearchResult[]> {
   if (q.length < 2) return [];
   const like = `%${q}%`;
   const [programs, news, events, albums] = await Promise.all([
-    supabase.from("programs").select("slug, title, category").ilike("title", like).limit(5),
+    supabase.from("programs").select("id, title, category").ilike("title", like).limit(5),
     supabase
       .from("news")
       .select("slug, title, category")
