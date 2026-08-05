@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
-import { Route as BeritaRouteImport } from './routes/berita'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DonasiRouteImport } from './routes/donasi'
 import { Route as GaleriRouteImport } from './routes/galeri'
@@ -33,9 +32,12 @@ import { Route as AdminProgramRouteImport } from './routes/admin/program'
 import { Route as AdminSertifikatRouteImport } from './routes/admin/sertifikat'
 import { Route as AdminSponsorRouteImport } from './routes/admin/sponsor'
 import { Route as AdminUserRouteImport } from './routes/admin/user'
+import { Route as BeritaIndexRouteImport } from './routes/berita/index'
+import { Route as BeritaSlugRouteImport } from './routes/berita/$slug'
 import { Route as DaftarSlugRouteImport } from './routes/daftar.$slug'
 import { Route as EventIndexRouteImport } from './routes/event/index'
 import { Route as EventSlugRouteImport } from './routes/event/$slug'
+import { Route as ApiPublicSitemapDotxmlRouteImport } from './routes/api/public/sitemap[.]xml'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,11 +47,6 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BeritaRoute = BeritaRouteImport.update({
-  id: '/berita',
-  path: '/berita',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -157,6 +154,16 @@ const AdminUserRoute = AdminUserRouteImport.update({
   path: '/user',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const BeritaIndexRoute = BeritaIndexRouteImport.update({
+  id: '/berita/',
+  path: '/berita/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeritaSlugRoute = BeritaSlugRouteImport.update({
+  id: '/berita/$slug',
+  path: '/berita/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DaftarSlugRoute = DaftarSlugRouteImport.update({
   id: '/daftar/$slug',
   path: '/daftar/$slug',
@@ -172,11 +179,15 @@ const EventSlugRoute = EventSlugRouteImport.update({
   path: '/event/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSitemapDotxmlRoute = ApiPublicSitemapDotxmlRouteImport.update({
+  id: '/api/public/sitemap.xml',
+  path: '/api/public/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/berita': typeof BeritaRoute
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -197,14 +208,16 @@ export interface FileRoutesByFullPath {
   '/admin/sertifikat': typeof AdminSertifikatRoute
   '/admin/sponsor': typeof AdminSponsorRoute
   '/admin/user': typeof AdminUserRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/berita/': typeof BeritaIndexRoute
   '/event/': typeof EventIndexRoute
+  '/api/public/sitemap.xml': typeof ApiPublicSitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/berita': typeof BeritaRoute
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -225,16 +238,18 @@ export interface FileRoutesByTo {
   '/admin/sertifikat': typeof AdminSertifikatRoute
   '/admin/sponsor': typeof AdminSponsorRoute
   '/admin/user': typeof AdminUserRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/berita': typeof BeritaIndexRoute
   '/event': typeof EventIndexRoute
+  '/api/public/sitemap.xml': typeof ApiPublicSitemapDotxmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/berita': typeof BeritaRoute
   '/dashboard': typeof DashboardRoute
   '/donasi': typeof DonasiRoute
   '/galeri': typeof GaleriRoute
@@ -255,17 +270,19 @@ export interface FileRoutesById {
   '/admin/sertifikat': typeof AdminSertifikatRoute
   '/admin/sponsor': typeof AdminSponsorRoute
   '/admin/user': typeof AdminUserRoute
+  '/berita/$slug': typeof BeritaSlugRoute
   '/daftar/$slug': typeof DaftarSlugRoute
   '/event/$slug': typeof EventSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/berita/': typeof BeritaIndexRoute
   '/event/': typeof EventIndexRoute
+  '/api/public/sitemap.xml': typeof ApiPublicSitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
-    | '/berita'
     | '/dashboard'
     | '/donasi'
     | '/galeri'
@@ -286,14 +303,16 @@ export interface FileRouteTypes {
     | '/admin/sertifikat'
     | '/admin/sponsor'
     | '/admin/user'
+    | '/berita/$slug'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin/'
+    | '/berita/'
     | '/event/'
+    | '/api/public/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/berita'
     | '/dashboard'
     | '/donasi'
     | '/galeri'
@@ -314,15 +333,17 @@ export interface FileRouteTypes {
     | '/admin/sertifikat'
     | '/admin/sponsor'
     | '/admin/user'
+    | '/berita/$slug'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin'
+    | '/berita'
     | '/event'
+    | '/api/public/sitemap.xml'
   id:
     | '__root__'
     | '/'
     | '/admin'
-    | '/berita'
     | '/dashboard'
     | '/donasi'
     | '/galeri'
@@ -343,25 +364,30 @@ export interface FileRouteTypes {
     | '/admin/sertifikat'
     | '/admin/sponsor'
     | '/admin/user'
+    | '/berita/$slug'
     | '/daftar/$slug'
     | '/event/$slug'
     | '/admin/'
+    | '/berita/'
     | '/event/'
+    | '/api/public/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
-  BeritaRoute: typeof BeritaRoute
   DashboardRoute: typeof DashboardRoute
   DonasiRoute: typeof DonasiRoute
   GaleriRoute: typeof GaleriRoute
   KontakRoute: typeof KontakRoute
   ProgramRoute: typeof ProgramRoute
   TentangRoute: typeof TentangRoute
+  BeritaSlugRoute: typeof BeritaSlugRoute
   DaftarSlugRoute: typeof DaftarSlugRoute
   EventSlugRoute: typeof EventSlugRoute
+  BeritaIndexRoute: typeof BeritaIndexRoute
   EventIndexRoute: typeof EventIndexRoute
+  ApiPublicSitemapDotxmlRoute: typeof ApiPublicSitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -378,13 +404,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/berita': {
-      id: '/berita'
-      path: '/berita'
-      fullPath: '/berita'
-      preLoaderRoute: typeof BeritaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -534,6 +553,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUserRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/berita/': {
+      id: '/berita/'
+      path: '/berita'
+      fullPath: '/berita/'
+      preLoaderRoute: typeof BeritaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/berita/$slug': {
+      id: '/berita/$slug'
+      path: '/berita/$slug'
+      fullPath: '/berita/$slug'
+      preLoaderRoute: typeof BeritaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/daftar/$slug': {
       id: '/daftar/$slug'
       path: '/daftar/$slug'
@@ -553,6 +586,13 @@ declare module '@tanstack/react-router' {
       path: '/event/$slug'
       fullPath: '/event/$slug'
       preLoaderRoute: typeof EventSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/sitemap.xml': {
+      id: '/api/public/sitemap.xml'
+      path: '/api/public/sitemap.xml'
+      fullPath: '/api/public/sitemap.xml'
+      preLoaderRoute: typeof ApiPublicSitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -601,16 +641,18 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
-  BeritaRoute: BeritaRoute,
   DashboardRoute: DashboardRoute,
   DonasiRoute: DonasiRoute,
   GaleriRoute: GaleriRoute,
   KontakRoute: KontakRoute,
   ProgramRoute: ProgramRoute,
   TentangRoute: TentangRoute,
+  BeritaSlugRoute: BeritaSlugRoute,
   DaftarSlugRoute: DaftarSlugRoute,
   EventSlugRoute: EventSlugRoute,
+  BeritaIndexRoute: BeritaIndexRoute,
   EventIndexRoute: EventIndexRoute,
+  ApiPublicSitemapDotxmlRoute: ApiPublicSitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
