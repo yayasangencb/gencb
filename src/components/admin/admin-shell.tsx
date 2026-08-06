@@ -32,7 +32,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import logo from "@/assets/logo-gencb.png";
+import logoAsset from "@/assets/logo-gencb.png.asset.json";
+const logo = logoAsset.url;
 import { logoutAdmin, roleLabel, rolePermissions, type AdminModule, type AdminSession } from "@/lib/admin/auth";
 
 const menu: { to: string; label: string; module: AdminModule; icon: typeof LayoutDashboard }[] = [

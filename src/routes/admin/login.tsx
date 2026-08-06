@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import logo from "@/assets/logo-gencb.png";
+import logoAsset from "@/assets/logo-gencb.png.asset.json";
+const logo = logoAsset.url;
 import { demoAccounts, loginAdmin, roleLabel } from "@/lib/admin/auth";
 
 export const Route = createFileRoute("/admin/login")({
