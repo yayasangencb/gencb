@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logoAsset from "@/assets/logo-gencb.png.asset.json";
 const logo = logoAsset.url;
-import { demoAccounts, loginAdmin, roleLabel } from "@/lib/admin/auth";
+import { loginAdmin } from "@/lib/admin/auth";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
@@ -26,17 +26,27 @@ function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const session = loginAdmin(email, password);
-    if (!session) {
-      setError("Email atau kata sandi salah, atau akun tidak aktif.");
-      toast.error("Login gagal");
-      return;
+    setError("");
+    setLoading(true);
+    try {
+      const { session, error: loginError } = await loginAdmin(email, password);
+      if (!session) {
+        setError(loginError ?? "Login gagal.");
+        toast.error("Login gagal");
+        return;
+      }
+      toast.success(`Selamat datang, ${session.name}`);
+      navigate({ to: "/admin", replace: true });
+    } catch {
+      setError("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+      toast.error("Gagal terhubung ke server");
+    } finally {
+      setLoading(false);
     }
-    toast.success(`Selamat datang, ${session.name}`);
-    navigate({ to: "/admin", replace: true });
   };
 
   return (
@@ -78,8 +88,9 @@ function AdminLoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@gencb.or.id"
+                placeholder="nama@email.com"
                 required
+                autoComplete="email"
               />
             </div>
             <div className="space-y-1.5">
@@ -91,36 +102,17 @@ function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="current-password"
               />
             </div>
             {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
-            <Button type="submit" className="w-full rounded-full">
-              Masuk ke Dashboard
+            <Button type="submit" className="w-full rounded-full" disabled={loading}>
+              {loading ? "Memproses..." : "Masuk ke Dashboard"}
             </Button>
           </form>
-
-          <div className="mt-8 rounded-2xl border border-border bg-muted/50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Akun demo (kata sandi: gencb123)
-            </p>
-            <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
-              {demoAccounts.map((a) => (
-                <li key={a.id} className="flex items-center justify-between gap-2">
-                  <button
-                    type="button"
-                    className="truncate font-medium text-foreground hover:underline"
-                    onClick={() => {
-                      setEmail(a.email);
-                      setPassword(a.password);
-                    }}
-                  >
-                    {a.email}
-                  </button>
-                  <span>{roleLabel[a.role]}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <p className="mt-8 text-xs text-muted-foreground">
+            Akses panel hanya diberikan oleh pengurus Yayasan Generasi Cerdas Beraksi.
+          </p>
         </div>
       </div>
     </div>
