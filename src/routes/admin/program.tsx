@@ -53,6 +53,7 @@ export const Route = createFileRoute("/admin/program")({
             options: ["Pendidikan", "Keagamaan", "Sosial", "Olahraga", "Lingkungan", "Teknologi"],
           },
           { key: "target", label: "Target sasaran" },
+          { key: "image", label: "Gambar / Cover Program", type: "image", required: false },
           { key: "status", label: "Status", type: "select", options: ["AKTIF", "ARSIP"] },
           { key: "description", label: "Deskripsi", type: "textarea" },
         ]}

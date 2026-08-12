@@ -3,6 +3,9 @@ import progKeagamaan from "@/assets/prog-keagamaan.jpg";
 import progSosial from "@/assets/prog-sosial.jpg";
 import progOlahraga from "@/assets/prog-olahraga.jpg";
 import heroImg from "@/assets/hero-gencb.jpg";
+import mtqBanner from "@/assets/mtq-banner.jpg";
+import tenisMeja from "@/assets/tenis-meja.jpg";
+import programJalan from "@/assets/program-jalan.jpg";
 
 export type EventStatus = "OPEN" | "SOON" | "ONGOING" | "CLOSED";
 
@@ -93,7 +96,7 @@ export const events: GencbEvent[] = [
     mapQuery: "Masjid Jami Al-Ikhlas Sasak Panjang Tajurhalang Bogor",
     quota: 200,
     registered: 120,
-    image: progKeagamaan,
+    image: mtqBanner,
     fee: 0,
     excerpt:
       "Musabaqah Tilawatil Qur'an tingkat desa dengan empat cabang lomba untuk anak dan remaja.",
@@ -206,7 +209,7 @@ export const events: GencbEvent[] = [
     mapQuery: "Lapangan Serbaguna RW 04 Sasak Panjang Tajurhalang",
     quota: 64,
     registered: 64,
-    image: progOlahraga,
+    image: tenisMeja,
     fee: 50000,
     excerpt: "Turnamen tenis meja antar-RW dengan sistem gugur dan kelas tunggal serta ganda.",
     description: [
@@ -329,22 +332,22 @@ export const events: GencbEvent[] = [
   },
   {
     slug: "jalan-santai-keluarga",
-    title: "Jalan Santai Keluarga GEN-CB",
+    title: "Program Jalan Sehat Routine (2 Minggu Sekali)",
     category: "Olahraga",
-    status: "SOON",
-    date: "8 November 2026",
-    startAt: "2026-11-08T06:00:00+07:00",
-    location: "Start & Finish Lapangan Desa",
+    status: "OPEN",
+    date: "Setiap 2 Minggu Sekali (Minggu Pagi)",
+    startAt: "2026-08-16T06:00:00+07:00",
+    location: "Start & Finish Lapangan Desa Sasak Panjang",
     address: "Lapangan Desa Sasak Panjang, Tajurhalang",
     mapQuery: "Lapangan Desa Sasak Panjang Tajurhalang",
     quota: 500,
-    registered: 0,
-    image: progOlahraga,
-    fee: 15000,
-    excerpt: "Jalan santai 5 km bersama keluarga dengan doorprize dan bazar UMKM desa.",
+    registered: 142,
+    image: programJalan,
+    fee: 0,
+    excerpt: "Kegiatan jalan sehat & olah tubuh rutin setiap 2 minggu sekali untuk menjaga kebugaran warga desa.",
     description: [
-      "Jalan santai keluarga sejauh 5 km mengelilingi desa, dimeriahkan bazar UMKM, senam bersama, dan pembagian doorprize utama.",
-      "Seluruh kontribusi peserta disalurkan untuk operasional Rumah Belajar GEN-CB.",
+      "Program Jalan Sehat diselenggarakan secara rutin setiap 2 minggu sekali pada hari Minggu pagi, rute 5 km mengelilingi kawasan Desa Sasak Panjang.",
+      "Acara dimeriahkan dengan senam bersama, pembagian doorprize menarik, serta ramah tamah warga antar-RT/RW.",
     ],
     competitions: [
       { name: "Kategori Umum", desc: "Rute 5 km untuk semua peserta.", age: "Semua usia" },

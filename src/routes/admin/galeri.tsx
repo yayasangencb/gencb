@@ -39,7 +39,7 @@ export const Route = createFileRoute("/admin/galeri")({
           { key: "album", label: "Album / kegiatan" },
           { key: "type", label: "Tipe media", type: "select", options: ["FOTO", "VIDEO"] },
           { key: "date", label: "Tanggal", type: "date" },
-          { key: "url", label: "Nama berkas", placeholder: "contoh: dokumentasi-mtq.jpg" },
+          { key: "url", label: "Berkas Foto / Video", type: "image", placeholder: "Seret foto ke sini atau unggah berkas" },
         ]}
       />
     </RequireModule>

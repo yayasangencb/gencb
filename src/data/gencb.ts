@@ -3,15 +3,18 @@ import progPendidikan from "@/assets/prog-pendidikan.jpg";
 import progKeagamaan from "@/assets/prog-keagamaan.jpg";
 import progSosial from "@/assets/prog-sosial.jpg";
 import progOlahraga from "@/assets/prog-olahraga.jpg";
+import mtqBanner from "@/assets/mtq-banner.jpg";
+import tenisMeja from "@/assets/tenis-meja.jpg";
+import programJalan from "@/assets/program-jalan.jpg";
 
-export const images = { heroImg, progPendidikan, progKeagamaan, progSosial, progOlahraga };
+export const images = { heroImg, progPendidikan, progKeagamaan, progSosial, progOlahraga, mtqBanner, tenisMeja, programJalan };
 
 export const ORG = {
   name: "Generasi Cerdas Beraksi",
   short: "GEN-CB",
   tagline: "Membangun Generasi Cerdas, Berkarakter, dan Berdampak untuk Indonesia.",
   email: "halo@gencb.or.id",
-  phone: "+62 812-0000-0000",
+  phone: "+62 857-7220-2454",
   address: "Sekretariat GEN-CB, Desa Sasak Panjang, Kec. Tajurhalang, Kab. Bogor, Jawa Barat",
 };
 
@@ -54,7 +57,16 @@ export const programs: {
     description:
       "Musabaqah Tilawatil Qur'an, kelas tahfidz, dan kajian rutin yang membentuk karakter religius.",
     target: "Anak & Remaja",
-    image: progKeagamaan,
+    image: mtqBanner,
+  },
+  {
+    slug: "program-jalan-sehat",
+    title: "Program Jalan Sehat (2 Minggu Sekali)",
+    category: "Olahraga",
+    description:
+      "Kegiatan olah tubuh dan jalan santai bersama warga yang dilaksanakan rutin setiap 2 minggu sekali untuk menjaga kesehatan dan mempererat tali silaturahmi.",
+    target: "Warga & Pemuda Desa",
+    image: programJalan,
   },
   {
     slug: "bakti-sosial",
@@ -67,12 +79,12 @@ export const programs: {
   },
   {
     slug: "sport-community",
-    title: "GEN-CB Sport Community",
+    title: "GEN-CB Sport Community & Turnamen Tenis Meja",
     category: "Olahraga",
     description:
-      "Turnamen tenis meja, jalan santai, dan liga kampung untuk menghidupkan semangat sportivitas.",
+      "Turnamen tenis meja, liga badminton, dan olahraga rutin untuk menghidupkan semangat sportivitas.",
     target: "Pemuda & Warga",
-    image: progOlahraga,
+    image: tenisMeja,
   },
   {
     slug: "desa-hijau",
@@ -105,7 +117,16 @@ export const news = [
     date: "24 Juli 2026",
     excerpt:
       "Empat cabang lomba dibuka: Tilawah, Hifdzil Qur'an, Murottal, dan Adzan, terbuka untuk anak dan remaja.",
-    image: progKeagamaan,
+    image: mtqBanner,
+  },
+  {
+    slug: "program-jalan-sehat-rutin",
+    title: "Program Jalan Sehat GEN-CB Digelar Setiap 2 Minggu Sekali",
+    category: "Olahraga",
+    date: "5 Agustus 2026",
+    excerpt:
+      "Inisiatif kebugaran rutin warga desa untuk menggalakkan pola hidup sehat dan meningkatkan keakraban antar-warga.",
+    image: programJalan,
   },
   {
     slug: "rumah-belajar-tembus-300-siswa",
@@ -128,12 +149,12 @@ export const news = [
 ];
 
 export const gallery = [
-  { src: progKeagamaan, caption: "MTQ Desa Sasak Panjang", tag: "Keagamaan" },
+  { src: mtqBanner, caption: "Musabaqoh Tilawatil Qur'an (MTQ) Desa Sasak Panjang", tag: "Keagamaan" },
+  { src: tenisMeja, caption: "Turnamen Tenis Meja GEN-CB", tag: "Olahraga" },
+  { src: programJalan, caption: "Program Jalan Sehat Rutin (2 Minggu Sekali)", tag: "Olahraga" },
   { src: progPendidikan, caption: "Kelas Rumah Belajar", tag: "Pendidikan" },
   { src: progSosial, caption: "Bakti Sosial Warga", tag: "Sosial" },
-  { src: progOlahraga, caption: "Turnamen Tenis Meja", tag: "Olahraga" },
   { src: heroImg, caption: "Kebersamaan Relawan GEN-CB", tag: "Komunitas" },
-  { src: progPendidikan, caption: "Pelatihan Literasi Digital", tag: "Teknologi" },
 ];
 
 export const partners = [

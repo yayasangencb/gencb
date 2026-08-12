@@ -45,6 +45,7 @@ export const Route = createFileRoute("/admin/sponsor")({
           { key: "type", label: "Tipe", type: "select", options: ["SPONSOR", "MITRA", "PEMERINTAH"] },
           { key: "contact", label: "Kontak" },
           { key: "website", label: "Website", required: false },
+          { key: "logo", label: "Logo / Banner Sponsor", type: "image", required: false },
           { key: "status", label: "Status", type: "select", options: ["AKTIF", "NONAKTIF"] },
         ]}
       />

@@ -68,7 +68,7 @@ function BeritaAdmin() {
           { key: "author", label: "Penulis" },
           { key: "date", label: "Tanggal", type: "date" },
           { key: "status", label: "Status", type: "select", options: ["DRAFT", "PUBLISH"] },
-          { key: "image", label: "Nama file foto/video", placeholder: "contoh: prog-pendidikan" },
+          { key: "image", label: "Foto Sampul Berita", type: "image" },
           { key: "tags", label: "Tag (pisahkan koma)", required: false },
           { key: "seoTitle", label: "Judul SEO", required: false },
           { key: "seoDescription", label: "Deskripsi SEO", required: false },

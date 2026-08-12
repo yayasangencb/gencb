@@ -16,6 +16,7 @@ import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
 import { LoadingScreen } from "@/components/site/loading-screen";
 import { Toaster } from "@/components/ui/sonner";
+import { WhatsAppBubble } from "@/components/site/WhatsAppBubble";
 
 function NotFoundComponent() {
   return (
@@ -144,6 +145,7 @@ function RootComponent() {
     return (
       <QueryClientProvider client={queryClient}>
         <Outlet />
+        <WhatsAppBubble />
         <Toaster />
       </QueryClientProvider>
     );
@@ -158,6 +160,7 @@ function RootComponent() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppBubble />
       <Toaster />
     </QueryClientProvider>
   );

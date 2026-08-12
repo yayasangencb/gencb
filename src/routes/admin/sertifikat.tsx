@@ -64,6 +64,7 @@ function SertifikatAdmin() {
           { key: "eventSlug", label: "Slug kegiatan" },
           { key: "orientation", label: "Orientasi", type: "select", options: ["LANDSCAPE", "PORTRAIT"] },
           { key: "signer", label: "Penandatangan" },
+          { key: "background", label: "Desain Background Sertifikat", type: "image", required: false },
           { key: "status", label: "Status", type: "select", options: ["AKTIF", "DRAFT"] },
         ]}
       />

@@ -167,10 +167,11 @@ export type ProgramRow = {
 export const seedPrograms: ProgramRow[] = [
   { id: "p-1", title: "Rumah Belajar Generasi", category: "Pendidikan", target: "Pelajar SD–SMA", description: "Bimbingan belajar gratis dan kelas literasi.", status: "AKTIF" },
   { id: "p-2", title: "MTQ & Kajian Remaja", category: "Keagamaan", target: "Anak & Remaja", description: "Kelas tahfidz dan kajian rutin remaja.", status: "AKTIF" },
-  { id: "p-3", title: "Bakti Sosial & Santunan", category: "Sosial", target: "Masyarakat Umum", description: "Santunan yatim dan paket sembako.", status: "AKTIF" },
-  { id: "p-4", title: "GEN-CB Sport Community", category: "Olahraga", target: "Pemuda & Warga", description: "Turnamen dan liga kampung.", status: "AKTIF" },
-  { id: "p-5", title: "Aksi Desa Hijau", category: "Lingkungan", target: "Warga & Relawan", description: "Bank sampah dan penanaman pohon.", status: "AKTIF" },
-  { id: "p-6", title: "Kelas Digital Muda", category: "Teknologi", target: "Pemuda 15–25 tahun", description: "Pelatihan desain dan literasi digital.", status: "ARSIP" },
+  { id: "p-3", title: "Program Jalan Sehat (2 Minggu Sekali)", category: "Olahraga", target: "Warga & Pemuda Desa", description: "Jalan santai rutin 2 mingguan warga.", status: "AKTIF" },
+  { id: "p-4", title: "Bakti Sosial & Santunan", category: "Sosial", target: "Masyarakat Umum", description: "Santunan yatim dan paket sembako.", status: "AKTIF" },
+  { id: "p-5", title: "GEN-CB Sport Community & Tenis Meja", category: "Olahraga", target: "Pemuda & Warga", description: "Turnamen tenis meja dan liga kampung.", status: "AKTIF" },
+  { id: "p-6", title: "Aksi Desa Hijau", category: "Lingkungan", target: "Warga & Relawan", description: "Bank sampah dan penanaman pohon.", status: "AKTIF" },
+  { id: "p-7", title: "Kelas Digital Muda", category: "Teknologi", target: "Pemuda 15–25 tahun", description: "Pelatihan desain dan literasi digital.", status: "ARSIP" },
 ];
 
 export type BannerRow = {
@@ -199,10 +200,11 @@ export type GalleryRow = {
 };
 
 export const seedGallery: GalleryRow[] = [
-  { id: "g-1", caption: "MTQ Desa Sasak Panjang", album: "MTQ 2026", type: "FOTO", date: "2026-07-20", url: "prog-keagamaan.jpg" },
-  { id: "g-2", caption: "Kelas Rumah Belajar", album: "Rumah Belajar", type: "FOTO", date: "2026-07-05", url: "prog-pendidikan.jpg" },
-  { id: "g-3", caption: "Bakti Sosial Warga", album: "Baksos Ramadan", type: "FOTO", date: "2026-03-18", url: "prog-sosial.jpg" },
-  { id: "g-4", caption: "Turnamen Tenis Meja", album: "Sport Community", type: "VIDEO", date: "2026-08-02", url: "turnamen-highlight.mp4" },
+  { id: "g-1", caption: "MTQ Desa Sasak Panjang", album: "MTQ 2026", type: "FOTO", date: "2026-07-20", url: "mtq-banner.jpg" },
+  { id: "g-2", caption: "Turnamen Tenis Meja", album: "Sport Community", type: "FOTO", date: "2026-08-02", url: "tenis-meja.jpg" },
+  { id: "g-3", caption: "Program Jalan Sehat Rutin 2 Mingguan", album: "Sport Community", type: "FOTO", date: "2026-08-05", url: "program-jalan.jpg" },
+  { id: "g-4", caption: "Kelas Rumah Belajar", album: "Rumah Belajar", type: "FOTO", date: "2026-07-05", url: "prog-pendidikan.jpg" },
+  { id: "g-5", caption: "Bakti Sosial Warga", album: "Baksos Ramadan", type: "FOTO", date: "2026-03-18", url: "prog-sosial.jpg" },
 ];
 
 export type SponsorRow = {

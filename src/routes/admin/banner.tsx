@@ -45,6 +45,7 @@ export const Route = createFileRoute("/admin/banner")({
           { key: "ctaLink", label: "Tautan tombol" },
           { key: "order", label: "Urutan tampil", type: "number" },
           { key: "status", label: "Status", type: "select", options: ["AKTIF", "NONAKTIF"] },
+          { key: "image", label: "Gambar Banner / Background", type: "image", required: false },
         ]}
       />
     </RequireModule>

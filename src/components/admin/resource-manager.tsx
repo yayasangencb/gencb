@@ -34,10 +34,12 @@ import { DataTable, type Column, type TableFilter } from "./data-table";
 import { useCollection, type Entity } from "@/lib/admin/store";
 import { downloadCsv, printTable } from "@/lib/admin/export";
 
+import { ImageDropzone } from "./image-dropzone";
+
 export type Field = {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "select" | "date";
+  type?: "text" | "textarea" | "number" | "select" | "date" | "image";
   options?: string[];
   placeholder?: string;
   required?: boolean;
@@ -215,10 +217,22 @@ export function ResourceManager<T extends Entity>({
             {fields.map((f) => (
               <div
                 key={f.key}
-                className={f.type === "textarea" ? "sm:col-span-2 space-y-1.5" : "space-y-1.5"}
+                className={
+                  f.type === "textarea" || f.type === "image"
+                    ? "sm:col-span-2 space-y-1.5"
+                    : "space-y-1.5"
+                }
               >
                 <Label htmlFor={f.key}>{f.label}</Label>
-                {f.type === "textarea" ? (
+                {f.type === "image" ? (
+                  <ImageDropzone
+                    value={draft[f.key] ?? ""}
+                    onChange={(val) => setDraft((p) => ({ ...p, [f.key]: val }))}
+                    label={f.label}
+                    placeholder={f.placeholder}
+                    error={errors[f.key]}
+                  />
+                ) : f.type === "textarea" ? (
                   <Textarea
                     id={f.key}
                     rows={4}
@@ -251,7 +265,7 @@ export function ResourceManager<T extends Entity>({
                     onChange={(e) => setDraft((p) => ({ ...p, [f.key]: e.target.value }))}
                   />
                 )}
-                {errors[f.key] ? (
+                {f.type !== "image" && errors[f.key] ? (
                   <p className="text-xs font-medium text-destructive">{errors[f.key]}</p>
                 ) : null}
               </div>

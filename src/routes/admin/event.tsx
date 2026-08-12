@@ -84,6 +84,7 @@ function EventAdmin() {
         { key: "quota", label: "Kuota", type: "number" },
         { key: "registered", label: "Jumlah pendaftar", type: "number" },
         { key: "fee", label: "Biaya (Rp, 0 = gratis)", type: "number" },
+        { key: "image", label: "Gambar / Poster Event", type: "image", required: false },
         { key: "openDate", label: "Pendaftaran dibuka" },
         { key: "closeDate", label: "Pendaftaran ditutup" },
         { key: "committee", label: "Panitia ditugaskan", required: false },
