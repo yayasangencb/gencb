@@ -1,22 +1,20 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type AdminRole = "SUPER_ADMIN" | "ADMIN" | "EDITOR" | "PANITIA";
-
-export type AdminAccount = {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  role: AdminRole;
-  event?: string | undefined;
-  active: boolean;
-};
 
 export const roleLabel: Record<AdminRole, string> = {
   SUPER_ADMIN: "Super Admin",
   ADMIN: "Admin",
   EDITOR: "Editor",
   PANITIA: "Panitia",
+};
+
+const dbRoleToAdminRole: Record<string, AdminRole> = {
+  super_admin: "SUPER_ADMIN",
+  admin: "ADMIN",
+  editor: "EDITOR",
+  panitia: "PANITIA",
 };
 
 export type AdminModule =
@@ -59,108 +57,94 @@ export const rolePermissions: Record<AdminRole, AdminModule[]> = {
   PANITIA: ["overview", "event", "pendaftar", "absensi", "sertifikat", "live"],
 };
 
-export const demoAccounts: AdminAccount[] = [
-  {
-    id: "u-1",
-    name: "Ahmad Fauzan",
-    email: "superadmin@gencb.or.id",
-    password: "gencb123",
-    role: "SUPER_ADMIN",
-    active: true,
-  },
-  {
-    id: "u-2",
-    name: "Nabila Rahmawati",
-    email: "admin@gencb.or.id",
-    password: "gencb123",
-    role: "ADMIN",
-    active: true,
-  },
-  {
-    id: "u-3",
-    name: "Intan Permata",
-    email: "editor@gencb.or.id",
-    password: "gencb123",
-    role: "EDITOR",
-    active: true,
-  },
-  {
-    id: "u-4",
-    name: "Bagas Saputra",
-    email: "panitia@gencb.or.id",
-    password: "gencb123",
-    role: "PANITIA",
-    event: "mtq-desa-sasak-panjang",
-    active: true,
-  },
-];
-
 export type AdminSession = {
   id: string;
   name: string;
   email: string;
   role: AdminRole;
-  event?: string | undefined;
 };
 
-const SESSION_KEY = "gencb-admin-session";
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-export function readSession(): AdminSession | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(SESSION_KEY);
-    return raw ? (JSON.parse(raw) as AdminSession) : null;
-  } catch {
-    return null;
+export async function loginAdmin(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.trim().toLowerCase(),
+    password,
+  });
+  if (error || !data.user) return { session: null, error: "Email atau kata sandi salah." };
+  const admin = await loadAdminSession();
+  if (!admin) {
+    await supabase.auth.signOut();
+    return { session: null, error: "Akun ini tidak memiliki akses ke panel pengelolaan." };
   }
+  return { session: admin, error: null };
 }
 
-export function loginAdmin(email: string, password: string, accounts: AdminAccount[] = demoAccounts) {
-  const found = accounts.find(
-    (a) => a.email.toLowerCase() === email.trim().toLowerCase() && a.password === password && a.active,
-  );
-  if (!found) return null;
-  const session: AdminSession = {
-    id: found.id,
-    name: found.name,
-    email: found.email,
-    role: found.role,
-    event: found.event,
+export async function logoutAdmin() {
+  await supabase.auth.signOut();
+}
+
+export async function loadAdminSession(): Promise<AdminSession | null> {
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return null;
+
+  const { data: roles } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id);
+
+  const adminRoles = (roles ?? [])
+    .map((r) => dbRoleToAdminRole[r.role as string])
+    .filter(Boolean) as AdminRole[];
+  if (!adminRoles.length) return null;
+
+  const priority: AdminRole[] = ["SUPER_ADMIN", "ADMIN", "EDITOR", "PANITIA"];
+  const role = priority.find((r) => adminRoles.includes(r)) ?? adminRoles[0]!;
+
+  const { data: profile } = await supabase
+    .from("users_profile")
+    .select("full_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return {
+    id: user.id,
+    name: profile?.full_name || user.email || "Pengelola",
+    email: user.email ?? "",
+    role,
   };
-  window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  emit();
-  return session;
-}
-
-export function logoutAdmin() {
-  window.localStorage.removeItem(SESSION_KEY);
-  emit();
 }
 
 export function useAdminSession() {
   const [session, setSession] = useState<AdminSession | null>(null);
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    const sync = () => setSession(readSession());
-    sync();
+  const refresh = useCallback(async () => {
+    const next = await loadAdminSession();
+    setSession(next);
     setReady(true);
-    listeners.add(sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      listeners.delete(sync);
-      window.removeEventListener("storage", sync);
-    };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    void loadAdminSession().then((next) => {
+      if (!active) return;
+      setSession(next);
+      setReady(true);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      void refresh();
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, [refresh]);
 
   return {
     session,
     ready,
+    refresh,
     can: (m: AdminModule) => !!session && rolePermissions[session.role].includes(m),
   };
 }
