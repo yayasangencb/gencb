@@ -340,9 +340,14 @@ export const seedNotifications: NotificationRow[] = [
   { id: "no-3", title: "Info Jalan Santai Keluarga", channel: "PUSH", audience: "Semua pengguna", message: "Pendaftaran jalan santai dibuka 10 Oktober 2026.", schedule: "2026-10-10", status: "DRAFT" },
 ];
 
-export type UserRow = AdminAccount & { lastLogin: string };
+export type UserRow = {
+  id: string;
+  name: string;
+  email: string;
+  role: AdminRole;
+  event?: string | undefined;
+  active: boolean;
+  lastLogin: string;
+};
 
-export const seedUsers: UserRow[] = demoAccounts.map((a, i) => ({
-  ...a,
-  lastLogin: `2026-08-0${i + 1} 09:${String(10 + i * 7).padStart(2, "0")}`,
-}));
+export const seedUsers: UserRow[] = [];
