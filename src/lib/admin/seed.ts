@@ -1,5 +1,5 @@
 import { events } from "@/data/events";
-import { demoAccounts, type AdminAccount } from "./auth";
+import type { AdminRole } from "./auth";
 
 export type NewsRow = {
   id: string;
