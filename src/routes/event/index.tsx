@@ -6,7 +6,7 @@ import { PageHero } from "@/components/site/page-hero";
 import { Reveal } from "@/components/site/reveal";
 import { StatusBadge } from "@/components/site/status-badge";
 import { events as defaultEvents, eventCategories, eventStatuses, formatRupiah } from "@/data/events";
-import { images } from "@/data/gencb";
+import { images, getDummyImage } from "@/data/gencb";
 import { useCollection } from "@/lib/admin/store";
 import { seedEvents, type EventRow } from "@/lib/admin/seed";
 import { cn } from "@/lib/utils";

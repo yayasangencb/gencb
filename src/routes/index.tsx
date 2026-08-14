@@ -6,7 +6,7 @@ import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { StatCounter } from "@/components/site/stat-counter";
 import { StatusBadge } from "@/components/site/status-badge";
-import { events as defaultEvents, gallery as defaultGallery, images, news as defaultNews, ORG, partners as defaultPartners, programs as defaultPrograms, stats, testimonials } from "@/data/gencb";
+import { events as defaultEvents, gallery as defaultGallery, images, getDummyImage, news as defaultNews, ORG, partners as defaultPartners, programs as defaultPrograms, stats, testimonials } from "@/data/gencb";
 import { useCollection } from "@/lib/admin/store";
 import { seedEvents, seedGallery, seedNews, seedPrograms, seedSponsors, seedDonationPrograms, type EventRow, type GalleryRow, type NewsRow, type ProgramRow, type SponsorRow, type DonationProgramRow } from "@/lib/admin/seed";
 
