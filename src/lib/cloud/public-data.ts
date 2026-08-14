@@ -36,7 +36,21 @@ function getLocalStore<T>(key: string): T[] | null {
 }
 
 export async function fetchNewsList() {
-  // Check local admin updates first for instant real-time sync
+  // Query Supabase Database FIRST so edits from Admin A on machine A are immediately fetched by machine B
+  try {
+    const { data, error } = await supabase
+      .from("news")
+      .select(
+        "id, slug, title, category, content, cover_image, published_at, created_at, tags, video_url, seo_title, seo_description",
+      )
+      .eq("status", "published")
+      .order("published_at", { ascending: false, nullsFirst: false });
+    if (!error && data && data.length) return data as NewsRow[];
+  } catch {
+    // fallback
+  }
+
+  // Fallback to local admin store if Supabase database is offline or empty
   const localNews = getLocalStore<any>("news");
   if (localNews && localNews.length) {
     const published = localNews.filter((n) => n.status === "PUBLISH");
@@ -58,39 +72,27 @@ export async function fetchNewsList() {
     }
   }
 
-  try {
-    const { data } = await supabase
-      .from("news")
-      .select(
-        "id, slug, title, category, content, cover_image, published_at, created_at, tags, video_url, seo_title, seo_description",
-      )
-      .eq("status", "published")
-      .order("published_at", { ascending: false, nullsFirst: false });
-    if (data && data.length) return data as NewsRow[];
-  } catch {
-    // fallback
-  }
-
   return [];
 }
 
 export async function fetchNewsBySlug(slug: string) {
-  const newsList = await fetchNewsList();
-  const found = newsList.find((n) => n.slug === slug);
-  if (found) return found;
-
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("news")
       .select(
         "id, slug, title, category, content, cover_image, published_at, created_at, tags, video_url, seo_title, seo_description",
       )
       .eq("slug", slug)
       .maybeSingle();
-    if (data) return data as NewsRow;
+    if (!error && data) return data as NewsRow;
   } catch {
     // fallback
   }
+
+  const newsList = await fetchNewsList();
+  const found = newsList.find((n) => n.slug === slug);
+  if (found) return found;
+
   return null;
 }
 
@@ -133,6 +135,16 @@ export type MediaRow = {
 };
 
 export async function fetchAlbums() {
+  try {
+    const { data, error } = await supabase
+      .from("gallery_albums")
+      .select("id, title, description")
+      .order("created_at", { ascending: false });
+    if (!error && data && data.length) return data as AlbumRow[];
+  } catch {
+    // fallback
+  }
+
   const localGallery = getLocalStore<any>("gallery");
   if (localGallery && localGallery.length) {
     const albumsSet = [...new Set(localGallery.map((g) => g.album || "Umum"))];
@@ -143,19 +155,23 @@ export async function fetchAlbums() {
     })) as AlbumRow[];
   }
 
-  try {
-    const { data } = await supabase
-      .from("gallery_albums")
-      .select("id, title, description")
-      .order("created_at", { ascending: false });
-    if (data && data.length) return data as AlbumRow[];
-  } catch {
-    // fallback
-  }
   return [];
 }
 
 export async function fetchMediaPage(opts: { albumId?: string; from: number; to: number }) {
+  try {
+    let q = supabase
+      .from("gallery_media")
+      .select("id, album_id, url, caption, media_type")
+      .order("created_at", { ascending: false })
+      .range(opts.from, opts.to);
+    if (opts.albumId) q = q.eq("album_id", opts.albumId);
+    const { data, error } = await q;
+    if (!error && data && data.length) return data as MediaRow[];
+  } catch {
+    // fallback
+  }
+
   const localGallery = getLocalStore<any>("gallery");
   if (localGallery && localGallery.length) {
     return localGallery.slice(opts.from, opts.to + 1).map((g, idx) => ({
@@ -167,18 +183,6 @@ export async function fetchMediaPage(opts: { albumId?: string; from: number; to:
     })) as MediaRow[];
   }
 
-  try {
-    let q = supabase
-      .from("gallery_media")
-      .select("id, album_id, url, caption, media_type")
-      .order("created_at", { ascending: false })
-      .range(opts.from, opts.to);
-    if (opts.albumId) q = q.eq("album_id", opts.albumId);
-    const { data } = await q;
-    if (data && data.length) return data as MediaRow[];
-  } catch {
-    // fallback
-  }
   return [];
 }
 
@@ -192,6 +196,17 @@ export type DonationProgramRow = {
 };
 
 export async function fetchDonationPrograms() {
+  try {
+    const { data, error } = await supabase
+      .from("donation_programs")
+      .select("id, title, description, cover_image, target_amount, collected_amount")
+      .eq("is_active", true)
+      .order("created_at", { ascending: true });
+    if (!error && data && data.length) return data as DonationProgramRow[];
+  } catch {
+    // fallback
+  }
+
   const localDonations = getLocalStore<any>("donation-programs");
   if (localDonations && localDonations.length) {
     const active = localDonations.filter((d) => d.status === "AKTIF" || !d.status);
@@ -207,20 +222,24 @@ export async function fetchDonationPrograms() {
     }
   }
 
-  try {
-    const { data } = await supabase
-      .from("donation_programs")
-      .select("id, title, description, cover_image, target_amount, collected_amount")
-      .eq("is_active", true)
-      .order("created_at", { ascending: true });
-    if (data && data.length) return data as DonationProgramRow[];
-  } catch {
-    // fallback
-  }
   return [];
 }
 
 export async function fetchVerifiedDonations(programId?: string) {
+  try {
+    let q = supabase
+      .from("donations")
+      .select("id, donor_name, amount, is_anonymous, created_at, donation_program_id")
+      .eq("is_verified", true)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    if (programId) q = q.eq("donation_program_id", programId);
+    const { data, error } = await q;
+    if (!error && data && data.length) return data;
+  } catch {
+    // fallback
+  }
+
   const localDonors = getLocalStore<any>("donors");
   if (localDonors && localDonors.length) {
     const verified = localDonors.filter((d) => d.status === "VERIFIED");
@@ -236,19 +255,6 @@ export async function fetchVerifiedDonations(programId?: string) {
     }
   }
 
-  try {
-    let q = supabase
-      .from("donations")
-      .select("id, donor_name, amount, is_anonymous, created_at, donation_program_id")
-      .eq("is_verified", true)
-      .order("created_at", { ascending: false })
-      .limit(20);
-    if (programId) q = q.eq("donation_program_id", programId);
-    const { data } = await q;
-    if (data) return data;
-  } catch {
-    // fallback
-  }
   return [];
 }
 
@@ -289,35 +295,6 @@ export async function globalSearch(term: string): Promise<SearchResult[]> {
 
   const results: SearchResult[] = [];
 
-  const localPrograms = getLocalStore<any>("programs");
-  if (localPrograms) {
-    for (const p of localPrograms) {
-      if (p.title?.toLowerCase().includes(q)) {
-        results.push({ type: "Program", title: p.title, subtitle: p.category || "Program", href: "/program" });
-      }
-    }
-  }
-
-  const localNews = getLocalStore<any>("news");
-  if (localNews) {
-    for (const n of localNews) {
-      if (n.title?.toLowerCase().includes(q)) {
-        results.push({ type: "Berita", title: n.title, subtitle: n.category || "Berita", href: `/berita/${n.slug || "berita"}` });
-      }
-    }
-  }
-
-  const localEvents = getLocalStore<any>("events");
-  if (localEvents) {
-    for (const e of localEvents) {
-      if (e.title?.toLowerCase().includes(q)) {
-        results.push({ type: "Event", title: e.title, subtitle: e.category || "Kegiatan", href: `/event/${e.slug || "event"}` });
-      }
-    }
-  }
-
-  if (results.length) return results;
-
   try {
     const like = `%${q}%`;
     const [programs, news, events, albums] = await Promise.all([
@@ -355,8 +332,36 @@ export async function globalSearch(term: string): Promise<SearchResult[]> {
       });
     for (const a of albums.data ?? [])
       results.push({ type: "Galeri", title: a.title, subtitle: "Album dokumentasi", href: "/galeri" });
+    if (results.length) return results;
   } catch {
     // fallback
+  }
+
+  const localPrograms = getLocalStore<any>("programs");
+  if (localPrograms) {
+    for (const p of localPrograms) {
+      if (p.title?.toLowerCase().includes(q)) {
+        results.push({ type: "Program", title: p.title, subtitle: p.category || "Program", href: "/program" });
+      }
+    }
+  }
+
+  const localNews = getLocalStore<any>("news");
+  if (localNews) {
+    for (const n of localNews) {
+      if (n.title?.toLowerCase().includes(q)) {
+        results.push({ type: "Berita", title: n.title, subtitle: n.category || "Berita", href: `/berita/${n.slug || "berita"}` });
+      }
+    }
+  }
+
+  const localEvents = getLocalStore<any>("events");
+  if (localEvents) {
+    for (const e of localEvents) {
+      if (e.title?.toLowerCase().includes(q)) {
+        results.push({ type: "Event", title: e.title, subtitle: e.category || "Kegiatan", href: `/event/${e.slug || "event"}` });
+      }
+    }
   }
 
   return results;
