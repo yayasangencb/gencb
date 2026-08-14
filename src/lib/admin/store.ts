@@ -45,7 +45,7 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
   try {
     if (key === "news") {
       if (action === "insert") {
-        await supabase.from("news").insert({
+        const { error } = await supabase.from("news").insert({
           id: String(payload.id),
           title: String(payload.title ?? ""),
           slug: String(payload.slug ?? `berita-${Date.now()}`),
@@ -56,20 +56,23 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           seo_title: String(payload.seoTitle ?? ""),
           seo_description: String(payload.seoDescription ?? ""),
         } as never);
+        if (error) console.warn("[Supabase RLS Notice] news insert:", error.message);
       } else if (action === "update") {
-        await supabase.from("news").update({
+        const { error } = await supabase.from("news").update({
           title: payload.title !== undefined ? String(payload.title) : undefined,
           category: payload.category !== undefined ? String(payload.category) : undefined,
           content: payload.content !== undefined ? String(payload.content) : undefined,
           cover_image: payload.image !== undefined ? String(payload.image) : undefined,
           status: payload.status !== undefined ? (payload.status === "PUBLISH" ? "published" : "draft") : undefined,
         } as never).eq("id", String(payload.id));
+        if (error) console.warn("[Supabase RLS Notice] news update:", error.message);
       } else if (action === "delete") {
-        await supabase.from("news").delete().eq("id", String(payload.id));
+        const { error } = await supabase.from("news").delete().eq("id", String(payload.id));
+        if (error) console.warn("[Supabase RLS Notice] news delete:", error.message);
       }
     } else if (key === "events") {
       if (action === "insert") {
-        await supabase.from("events").insert({
+        const { error } = await supabase.from("events").insert({
           id: String(payload.id),
           title: String(payload.title ?? ""),
           slug: String(payload.slug ?? `event-${Date.now()}`),
@@ -82,46 +85,52 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           location_text: String(payload.location ?? ""),
           poster_url: String(payload.image ?? ""),
         } as never);
+        if (error) console.warn("[Supabase RLS Notice] events insert:", error.message);
       } else if (action === "update") {
-        await supabase.from("events").update({
+        const { error } = await supabase.from("events").update({
           title: payload.title !== undefined ? String(payload.title) : undefined,
           status: payload.status !== undefined ? (payload.status as string).toLowerCase() : undefined,
           quota: payload.quota !== undefined ? Number(payload.quota) : undefined,
           registered_count: payload.registered !== undefined ? Number(payload.registered) : undefined,
           price: payload.fee !== undefined ? Number(payload.fee) : undefined,
         } as never).eq("id", String(payload.id));
+        if (error) console.warn("[Supabase RLS Notice] events update:", error.message);
       } else if (action === "delete") {
-        await supabase.from("events").delete().eq("id", String(payload.id));
+        const { error } = await supabase.from("events").delete().eq("id", String(payload.id));
+        if (error) console.warn("[Supabase RLS Notice] events delete:", error.message);
       }
     } else if (key === "donation-programs") {
       if (action === "insert") {
-        await supabase.from("donation_programs").insert({
+        const { error } = await supabase.from("donation_programs").insert({
           id: String(payload.id),
           title: String(payload.title ?? ""),
           target_amount: Number(payload.target ?? 0),
           collected_amount: Number(payload.collected ?? 0),
           is_active: payload.status === "AKTIF",
         } as never);
+        if (error) console.warn("[Supabase RLS Notice] donation_programs insert:", error.message);
       } else if (action === "update") {
-        await supabase.from("donation_programs").update({
+        const { error } = await supabase.from("donation_programs").update({
           title: payload.title !== undefined ? String(payload.title) : undefined,
           target_amount: payload.target !== undefined ? Number(payload.target) : undefined,
           collected_amount: payload.collected !== undefined ? Number(payload.collected) : undefined,
           is_active: payload.status !== undefined ? payload.status === "AKTIF" : undefined,
         } as never).eq("id", String(payload.id));
+        if (error) console.warn("[Supabase RLS Notice] donation_programs update:", error.message);
       }
     } else if (key === "notifications") {
       if (action === "insert" || action === "update") {
-        await supabase.from("notifications_log").insert({
+        const { error } = await supabase.from("notifications_log").insert({
           title: String(payload.title ?? "Broadcast"),
           message: String(payload.message ?? ""),
           channel: ((payload.channel as string)?.toLowerCase() as "email" | "whatsapp" | "push") ?? "email",
           status: String(payload.status ?? "DRAFT"),
         } as never);
+        if (error) console.warn("[Supabase RLS Notice] notifications_log insert:", error.message);
       }
     }
   } catch (err) {
-    console.warn(`[Supabase Sync] ${key} ${action} error (offline/RLS):`, err);
+    console.warn(`[Supabase Sync] ${key} ${action} error:`, err);
   }
 }
 
@@ -140,8 +149,8 @@ export function useCollection<T extends Entity>(key: string, seed: T[]) {
     const fetchSupabase = async () => {
       try {
         if (key === "news") {
-          const { data } = await supabase.from("news").select("*").order("created_at", { ascending: false });
-          if (data && data.length && isMounted) {
+          const { data, error } = await supabase.from("news").select("*").order("created_at", { ascending: false });
+          if (!error && data && data.length && isMounted) {
             const mapped: T[] = data.map((n) => ({
               id: n.id,
               title: n.title,
@@ -158,8 +167,8 @@ export function useCollection<T extends Entity>(key: string, seed: T[]) {
             write(key, mapped);
           }
         } else if (key === "events") {
-          const { data } = await supabase.from("events").select("*").order("created_at", { ascending: false });
-          if (data && data.length && isMounted) {
+          const { data, error } = await supabase.from("events").select("*").order("created_at", { ascending: false });
+          if (!error && data && data.length && isMounted) {
             const mapped: T[] = data.map((e) => ({
               id: e.id,
               title: e.title,
@@ -181,8 +190,8 @@ export function useCollection<T extends Entity>(key: string, seed: T[]) {
             write(key, mapped);
           }
         } else if (key === "donation-programs") {
-          const { data } = await supabase.from("donation_programs").select("*").order("created_at", { ascending: false });
-          if (data && data.length && isMounted) {
+          const { data, error } = await supabase.from("donation_programs").select("*").order("created_at", { ascending: false });
+          if (!error && data && data.length && isMounted) {
             const mapped: T[] = data.map((d) => ({
               id: d.id,
               title: d.title,
