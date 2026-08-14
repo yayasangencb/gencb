@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, ExternalLink, Sparkles, PhoneCall } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Sparkles, ExternalLink, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -9,344 +9,265 @@ type ChatMessage = {
   id: string;
   sender: "ai" | "user";
   text: string;
-  timestamp: string;
-  isAction?: boolean;
+  time: string;
+  isActionWA?: boolean;
 };
 
 const INITIAL_MESSAGES: ChatMessage[] = [
   {
-    id: "m-init",
+    id: "m-1",
     sender: "ai",
-    text: "Halo! 👋 Selamat datang di Yayasan Generasi Cerdas Beraksi (GEN-CB).\n\nSaya Asisten AI Virtual. Silakan tanyakan info seputar **MTQ, Program Jalan Sehat, Rumah Belajar, Donasi, atau Lokasi**.\n\nJika ingin bicara langsung dengan pengurus, ketik **'chat admin'** atau klik tombol WhatsApp di bawah.",
-    timestamp: "Baru saja",
+    text: "Halo! 👋 Saya Asisten AI GEN-CB. Silakan tanyakan apa saja seputar pendaftaran MTQ, program jalan sehat, donasi, atau kegiatan yayasan. Jika butuh bantuan langsung, ketik 'chat admin'.",
+    time: "Baru saja",
   },
 ];
 
 const SUGGESTED_QUESTIONS = [
-  "Jadwal MTQ Desa",
-  "Program Jalan Sehat",
-  "Berapa Biaya Pendaftaran?",
-  "Alamat Sekretariat",
-  "Cara Donasi",
+  "Info Pendaftaran MTQ",
+  "Jalan Sehat 2 Mingguan",
+  "Cara Berdonasi",
   "Chat Admin WA",
 ];
-
-function getAiResponse(userText: string): { reply: string; redirectWa: boolean } {
-  const lower = userText.toLowerCase().trim();
-
-  // Direct Admin Request
-  if (
-    lower.includes("chat admin") ||
-    lower.includes("hubungi admin") ||
-    lower.includes("admin wa") ||
-    lower.includes("whatsapp") ||
-    lower.includes("bicara admin") ||
-    lower.includes("kontak admin") ||
-    lower.includes("ngobrol admin") ||
-    lower.includes("panggil admin") ||
-    lower.includes("operator")
-  ) {
-    return {
-      reply: "Tentu! Saya akan langsung menghubungkan Anda ke WhatsApp Admin GEN-CB (+62 857-7220-2454) untuk berbicara langsung dengan pengurus sekarang...",
-      redirectWa: true,
-    };
-  }
-
-  // Greetings & Intros
-  if (
-    lower === "halo" ||
-    lower === "hi" ||
-    lower === "p" ||
-    lower === "tes" ||
-    lower === "siang" ||
-    lower === "pagi" ||
-    lower === "malam" ||
-    lower.includes("assalamualaikum") ||
-    lower.includes("selamat pagi") ||
-    lower.includes("selamat siang") ||
-    lower.includes("selamat sore") ||
-    lower.includes("selamat malam") ||
-    lower.includes("permisi")
-  ) {
-    return {
-      reply: "Waalaikumsalam / Halo! Selamat datang di Yayasan Generasi Cerdas Beraksi (GEN-CB). 😊\n\nAda yang bisa saya bantu? Anda bisa tanyakan seputar:\n1. 📖 Pendaftaran MTQ & Lomba\n2. 🏃‍♂️ Program Jalan Sehat (Rutin 2 Mingguan)\n3. 🏓 Turnamen Tenis Meja & Olahraga\n4. 🎓 Rumah Belajar & Bimbingan Gratis\n5. 🤲 Program Donasi & Beasiswa\n6. 📍 Alamat & Kontak Sekretariat\n\nAtau ketik **'chat admin'** jika ingin tersambung ke WhatsApp Admin.",
-      redirectWa: false,
-    };
-  }
-
-  // MTQ & Keagamaan
-  if (lower.includes("mtq") || lower.includes("quran") || lower.includes("tilawah") || lower.includes("adzan") || lower.includes("murottal") || lower.includes("hifdzil")) {
-    return {
-      reply: "📖 **MTQ Desa Sasak Panjang 2026**\n\n• **Cabang Lomba**: Tilawah Al-Qur'an, Hifdzil Qur'an (Juz 30), Murottal, dan Adzan (Kategori Anak & Remaja).\n• **Lokasi**: Masjid Jami Al-Ikhlas, Desa Sasak Panjang.\n• **Waktu**: 12 September 2026 (Pukul 07.00 WIB - Selesai).\n• **Biaya Pendaftaran**: 100% GRATIS!\n• **Fasilitas**: Trophy/Piala, Piagam Sertifikat Resmi, dan Uang Pembinaan.\n\nAnda dapat mendaftar online melalui menu **Event** pada website kami. Mau bertanya langsung ke panitia? Ketik **'chat admin'**.",
-      redirectWa: false,
-    };
-  }
-
-  // Jalan Sehat
-  if (lower.includes("jalan") || lower.includes("sehat") || lower.includes("jalan santai") || lower.includes("2 minggu")) {
-    return {
-      reply: "🏃‍♂️ **Program Jalan Sehat (Rutin 2 Minggu Sekali)**\n\n• **Jadwal**: Setiap hari Minggu (2 minggu sekali) pukul 06.00 WIB.\n• **Titik Kumpul**: Lapangan / Alun-Alun Desa Sasak Panjang.\n• **Peserta**: Terbuka gratis untuk seluruh warga desa, keluarga, & pemuda.\n• **Benefit**: Olahraga santai bersama, doorprize menarik, & kupon sembako.\n\nSilakan langsung datang ke lokasi saat pelaksanaan atau tanyakan admin via WhatsApp!",
-      redirectWa: false,
-    };
-  }
-
-  // Tenis Meja & Olahraga
-  if (lower.includes("tenis") || lower.includes("meja") || lower.includes("pingpong") || lower.includes("sport") || lower.includes("liga")) {
-    return {
-      reply: "🏓 **GEN-CB Sport Community & Turnamen Tenis Meja**\n\n• **Kegiatan**: Latihan rutin dan turnamen tenis meja antar-warga.\n• **Lokasi**: Balai Warga & Sekretariat GEN-CB Desa Sasak Panjang.\n• **Peserta**: Pemuda, dewasa, dan pencinta olahraga tenis meja.\n• **Pendaftaran**: Terbuka secara berkala melalui menu Event.",
-      redirectWa: false,
-    };
-  }
-
-  // Rumah Belajar & Pendidikan
-  if (lower.includes("belajar") || lower.includes("rumah belajar") || lower.includes("pendidikan") || lower.includes("les") || lower.includes("kursus") || lower.includes("sekolah")) {
-    return {
-      reply: "🎓 **Program Rumah Belajar Generasi**\n\n• **Layanan**: Bimbingan belajar gratis (Matematika, Bahasa Inggris, Membaca & Mengaji) untuk anak SD–SMA.\n• **Siswa Aktif**: 300+ siswa didampingi relawan pengajar mahasiswa.\n• **Jadwal**: Setiap Selasa & Kamis sore serta Sabtu pagi.\n• **Biaya**: 100% GRATIS untuk seluruh warga desa.",
-      redirectWa: false,
-    };
-  }
-
-  // Donasi & Beasiswa
-  if (lower.includes("donasi") || lower.includes("beasiswa") || lower.includes("zakat") || lower.includes("infaq") || lower.includes("sedekah") || lower.includes("rekening") || lower.includes("qris")) {
-    return {
-      reply: "🤲 **Program Donasi & Beasiswa Anak Desa**\n\n• **Pilar Penyaluran**: Operasional Rumah Belajar, Beasiswa Yatim & Dhuafa, serta Paket Sembako.\n• **Metode Donasi**: Transfer Bank Resmi & QRIS Instant.\n• **Transparansi**: Donasi tercatat otomatis dan dapat dipantau di menu Donasi.\n\nTerima kasih atas kebaikan Anda dalam mendukung pendidikan dan sosial anak-anak desa!",
-      redirectWa: false,
-    };
-  }
-
-  // Relawan / Gabung Panitia
-  if (lower.includes("relawan") || lower.includes("volunteer") || lower.includes("gabung") || lower.includes("pengajar") || lower.includes("panitia")) {
-    return {
-      reply: "🤝 **Bergabung Menjadi Relawan GEN-CB**\n\nKami sangat terbuka menerima relawan pengajar Rumah Belajar, relawan dokumentasi, maupun panitia event kepemudaan.\n\nSilakan isi form relawan via website atau ketik **'chat admin'** untuk mendaftar via WhatsApp Pengurus.",
-      redirectWa: false,
-    };
-  }
-
-  // Lokasi & Alamat Kontak
-  if (lower.includes("lokasi") || lower.includes("alamat") || lower.includes("mana") || lower.includes("dimana") || lower.includes("sekretariat") || lower.includes("telepon") || lower.includes("nomor")) {
-    return {
-      reply: "📍 **Lokasi & Alamat Sekretariat GEN-CB**\n\n• **Alamat**: Jl. Raya Sasak Panjang No. 12, Desa Sasak Panjang, Kec. Tajurhalang, Kab. Bogor, Jawa Barat 16320.\n• **WhatsApp Admin**: +62 857-7220-2454\n• **Email Resmi**: halo@gencb.or.id\n• **Jam Operasional**: Senin – Sabtu (08.00 – 17.00 WIB)",
-      redirectWa: false,
-    };
-  }
-
-  // Biaya Pendaftaran
-  if (lower.includes("biaya") || lower.includes("bayar") || lower.includes("harga") || lower.includes("gratis")) {
-    return {
-      reply: "💡 **Informasi Biaya**\n\nHampir seluruh kegiatan GEN-CB (seperti MTQ Desa, Program Jalan Sehat, dan Rumah Belajar) adalah **100% GRATIS** alias tanpa dipungut biaya apapun! Untuk event khusus turnamen, biaya kontribusi tertera di detail event.",
-      redirectWa: false,
-    };
-  }
-
-  // Default fallback response
-  return {
-    reply: `Terima kasih atas pertanyaannya: "${userText}" 😊\n\nSaya Asisten AI Virtual GEN-CB. Saya dapat menginfokan seputar **MTQ, Jalan Sehat, Tenis Meja, Rumah Belajar, Donasi, atau Alamat Sekretariat**.\n\nJika Anda ingin bertanya sesuatu yang spesifik langsung kepada pengurus yayasan, silakan ketik **'chat admin'** atau klik tombol **Chat Admin WA** di bawah ini.`,
-    redirectWa: false,
-  };
-}
 
 export function WhatsAppBubble() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const chatBottomRef = useRef<HTMLDivElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const openWhatsApp = (customText?: string) => {
-    const textToSend = customText || input || "Halo min, saya ingin menanyakan informasi seputar GEN-CB";
-    const encoded = encodeURIComponent(textToSend.trim());
-    window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${encoded}`, "_blank");
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    if (isOpen) {
-      chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
+    if (isOpen) scrollToBottom();
   }, [messages, isOpen, isTyping]);
 
-  const handleSend = (textOverride?: string) => {
-    const text = (textOverride || input).trim();
-    if (!text) return;
+  const redirectWa = (query: string) => {
+    const text = encodeURIComponent(query.trim() || "Halo min, saya ingin menanyakan informasi seputar GEN-CB");
+    window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${text}`, "_blank");
+  };
+
+  const processAiResponse = (userText: string) => {
+    const textLow = userText.toLowerCase().trim();
+
+    // Check if user specifically requested human admin
+    if (
+      textLow.includes("admin") ||
+      textLow.includes("wa") ||
+      textLow.includes("whatsapp") ||
+      textLow.includes("hubungi") ||
+      textLow.includes("kontak") ||
+      textLow.includes("manusia")
+    ) {
+      setTimeout(() => {
+        setIsTyping(false);
+        const aiMsg: ChatMessage = {
+          id: `msg-${Date.now()}`,
+          sender: "ai",
+          text: "Siap! Saya akan mengarahkan Anda langsung ke WhatsApp Admin Yayasan GEN-CB (+62 857-7220-2454). Memicu ke WhatsApp...",
+          time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+          isActionWA: true,
+        };
+        setMessages((prev) => [...prev, aiMsg]);
+
+        setTimeout(() => {
+          redirectWa(`Halo min, saya ingin menanyakan: ${userText}`);
+        }, 1200);
+      }, 700);
+      return;
+    }
+
+    let answer = "";
+    if (textLow.includes("mtq") || textLow.includes("lomba")) {
+      answer = "Pendaftaran MTQ Desa Sasak Panjang 2026 sedang dibuka! Terdapat 4 cabang lomba: Tilawah, Hifdzil Qur'an, Murottal, dan Adzan. Pendaftaran gratis melalui menu Event pada website.";
+    } else if (textLow.includes("jalan") || textLow.includes("sehat") || textLow.includes("olahraga")) {
+      answer = "Program Jalan Sehat GEN-CB diadakan rutin setiap 2 minggu sekali untuk seluruh warga & pemuda Desa. Kegiatan ini gratis dan menyehatkan!";
+    } else if (textLow.includes("donasi") || textLow.includes("transfer") || textLow.includes("qris") || textLow.includes("bantu")) {
+      answer = "Donasi disalurkan untuk operasional Rumah Belajar gratis, Beasiswa Anak Desa, dan baksos yatim. Anda dapat berdonasi via Transfer Bank atau QRIS di halaman Donasi.";
+    } else if (textLow.includes("relawan") || textLow.includes("gabung") || textLow.includes("daftar")) {
+      answer = "Anda dapat mendaftar kegiatan melalui menu Event atau bergabung sebagai relawan pengajar Rumah Belajar. Kami selalu terbuka untuk pemuda yang ingin berkontribusi!";
+    } else if (textLow.includes("lokasi") || textLow.includes("alamat") || textLow.includes("mana")) {
+      answer = "Sekretariat GEN-CB berlokasi di Desa Sasak Panjang, Kec. Tajurhalang, Kab. Bogor, Jawa Barat.";
+    } else {
+      answer = "Terima kasih atas pertanyaannya! GEN-CB aktif dalam bidang pendidikan, keagamaan, sosial, dan olahraga. Untuk pertanyaan lebih spesifik atau bantuan khusus, ketik 'chat admin' agar dihubungkan ke WhatsApp admin.";
+    }
+
+    setTimeout(() => {
+      setIsTyping(false);
+      const aiMsg: ChatMessage = {
+        id: `msg-${Date.now()}`,
+        sender: "ai",
+        text: answer,
+        time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+    }, 800);
+  };
+
+  const handleSend = (overrideText?: string) => {
+    const textToSend = overrideText || input;
+    if (!textToSend.trim()) return;
 
     const userMsg: ChatMessage = {
-      id: `u-${Date.now()}`,
+      id: `msg-${Date.now()}`,
       sender: "user",
-      text,
-      timestamp: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+      text: textToSend.trim(),
+      time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
     };
 
     setMessages((prev) => [...prev, userMsg]);
-    if (!textOverride) setInput("");
-
-    // Trigger AI thinking state
+    if (!overrideText) setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const { reply, redirectWa } = getAiResponse(text);
-      const aiMsg: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        sender: "ai",
-        text: reply,
-        timestamp: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
-        isAction: redirectWa,
-      };
-
-      setMessages((prev) => [...prev, aiMsg]);
-      setIsTyping(false);
-
-      if (redirectWa) {
-        setTimeout(() => openWhatsApp(text), 1200);
-      }
-    }, 450);
+    processAiResponse(textToSend.trim());
   };
 
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3 font-sans select-none print:hidden">
-      {/* AI Chat Window */}
+      {/* Chat Popup Box */}
       {isOpen && (
-        <div className="w-[330px] sm:w-[380px] h-[480px] rounded-3xl border border-border bg-card text-card-foreground shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200 backdrop-blur-md">
+        <div className="w-[320px] sm:w-[370px] rounded-2xl border border-emerald-500/20 bg-card text-card-foreground shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200 backdrop-blur-md">
           {/* Header */}
-          <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 p-4 text-white flex items-center justify-between shadow-sm shrink-0">
-            <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-3.5 text-white flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2.5">
               <div className="relative">
-                <div className="size-10 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center font-bold text-white shadow-inner">
-                  <Bot className="size-6 text-emerald-100" />
+                <div className="size-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-white shadow-inner">
+                  <Bot className="size-5" />
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-emerald-400 border-2 border-emerald-800 animate-pulse" />
+                <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-400 border-2 border-emerald-700 animate-pulse" />
               </div>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-semibold text-sm leading-tight">Asisten GEN-CB AI</h3>
-                  <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-md font-mono text-emerald-100">
-                    BOT
-                  </span>
-                </div>
-                <p className="text-[11px] text-emerald-100/90 mt-0.5 flex items-center gap-1">
-                  <Sparkles className="size-3 text-emerald-300" /> Jawab Otomatis & Alih ke WA Admin
-                </p>
+                <h3 className="font-semibold text-xs leading-tight flex items-center gap-1">
+                  Asisten AI GEN-CB <Sparkles className="size-3 text-amber-300" />
+                </h3>
+                <p className="text-[10px] text-emerald-100 mt-0.5">Tanya Jawab Otomatis & WA Admin</p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               aria-label="Tutup chat"
             >
-              <X className="size-5" />
+              <X className="size-4" />
             </button>
           </div>
 
-          {/* Messages Stream */}
-          <div className="flex-1 p-4 space-y-3 bg-muted/20 overflow-y-auto">
+          {/* Messages List */}
+          <div className="p-3.5 space-y-3 bg-muted/20 h-[280px] overflow-y-auto">
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={`flex gap-2.5 ${m.sender === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex gap-2 ${m.sender === "user" ? "justify-end" : "justify-start"}`}
               >
                 {m.sender === "ai" && (
-                  <div className="size-7 rounded-xl bg-emerald-600/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <Bot className="size-4" />
+                  <div className="size-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-1">
+                    <Bot className="size-3.5" />
                   </div>
                 )}
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed shadow-xs ${
+                  className={`max-w-[85%] rounded-2xl px-3 py-2 text-xs shadow-xs leading-relaxed space-y-1 ${
                     m.sender === "user"
                       ? "bg-emerald-600 text-white rounded-br-none"
                       : "bg-background text-foreground border border-border/60 rounded-bl-none"
                   }`}
                 >
-                  <p className="whitespace-pre-line">{m.text}</p>
-                  {m.isAction && (
+                  <p>{m.text}</p>
+                  {m.isActionWA && (
                     <Button
                       size="sm"
-                      onClick={() => openWhatsApp("Halo min saya ingin bicara dengan admin")}
-                      className="mt-2.5 w-full h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 rounded-xl shadow-xs"
+                      className="mt-2 w-full text-[11px] h-7 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl gap-1"
+                      onClick={() => redirectWa(messages[messages.length - 2]?.text || "Chat Admin")}
                     >
-                      <PhoneCall className="size-3.5" /> Buka WhatsApp Admin Sekarang <ExternalLink className="size-3" />
+                      <ExternalLink className="size-3" /> Langsung ke WhatsApp
                     </Button>
                   )}
                   <span
-                    className={`block text-[9px] mt-1.5 text-right ${
+                    className={`block text-[9px] text-right ${
                       m.sender === "user" ? "text-emerald-100" : "text-muted-foreground"
                     }`}
                   >
-                    {m.timestamp}
+                    {m.time}
                   </span>
                 </div>
                 {m.sender === "user" && (
-                  <div className="size-7 rounded-xl bg-accent text-accent-foreground flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
-                    <User className="size-4" />
+                  <div className="size-6 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 mt-1">
+                    <User className="size-3.5" />
                   </div>
                 )}
               </div>
             ))}
 
             {isTyping && (
-              <div className="flex gap-2 items-center text-xs text-muted-foreground pt-1">
-                <div className="size-7 rounded-xl bg-emerald-600/10 text-emerald-600 flex items-center justify-center shrink-0">
-                  <Bot className="size-4 animate-bounce" />
+              <div className="flex gap-2 items-center text-xs text-muted-foreground">
+                <div className="size-6 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+                  <Bot className="size-3.5 animate-spin" />
                 </div>
-                <span className="italic text-[11px]">Asisten AI sedang berpikir...</span>
+                <span className="italic text-[11px]">Asisten AI mengetik...</span>
               </div>
             )}
-            <div ref={chatBottomRef} />
+            <div ref={chatEndRef} />
           </div>
 
-          {/* Quick Prompt Chips */}
-          <div className="px-3 py-2 bg-card border-t border-border/60 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            {SUGGESTED_QUESTIONS.map((q) => (
-              <button
-                key={q}
-                onClick={() => handleSend(q)}
-                className="whitespace-nowrap text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all"
-              >
-                + {q}
-              </button>
-            ))}
+          {/* Quick Suggestion Chips */}
+          <div className="px-3.5 py-2 bg-muted/40 border-t border-border/50">
+            <div className="flex flex-wrap gap-1">
+              {SUGGESTED_QUESTIONS.map((q) => (
+                <button
+                  key={q}
+                  onClick={() => handleSend(q)}
+                  className="text-[10px] px-2 py-0.5 rounded-full bg-card border border-border text-foreground hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-colors"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Input & Direct WA Action */}
-          <div className="p-3 bg-card border-t border-border space-y-2">
-            <div className="flex gap-2">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Tanyakan ke AI atau ketik 'chat admin'..."
-                className="text-xs h-9 bg-background shadow-xs focus-visible:ring-emerald-500"
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSend())}
-              />
-              <Button
-                onClick={() => handleSend()}
-                size="icon"
-                className="size-9 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs"
-                title="Kirim pesan ke AI"
-              >
-                <Send className="size-4" />
-              </Button>
-            </div>
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
-              <span>Tanyakan AI dulu atau hubungi admin</span>
-              <button
-                onClick={() => openWhatsApp("Halo min saya ingin menanyakan tentang GEN-CB")}
-                className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1"
-              >
-                Chat Admin WA <ExternalLink className="size-3" />
-              </button>
-            </div>
+          {/* Input Box */}
+          <div className="p-3 bg-card border-t border-border flex gap-2 items-center">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Tulis pertanyaan atau 'chat admin'..."
+              className="text-xs h-8 bg-background focus-visible:ring-emerald-500"
+              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSend())}
+            />
+            <Button
+              onClick={() => handleSend()}
+              size="icon"
+              className="size-8 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+              title="Kirim pesan"
+            >
+              <Send className="size-3.5" />
+            </Button>
+          </div>
+
+          {/* Footer Direct WA Redirection Button */}
+          <div className="px-3 py-1.5 bg-emerald-500/10 border-t border-emerald-500/20 flex items-center justify-between text-[10px] text-emerald-800 dark:text-emerald-300">
+            <span>Admin WA (+62 857-7220-2454)</span>
+            <button
+              onClick={() => redirectWa(input || "Halo Admin GEN-CB")}
+              className="font-bold flex items-center gap-0.5 hover:underline text-emerald-700 dark:text-emerald-400"
+            >
+              Chat Admin WA <ExternalLink className="size-2.5" />
+            </button>
           </div>
         </div>
       )}
 
-      {/* Main Trigger Button */}
+      {/* Floating Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative group flex items-center gap-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white p-3.5 sm:px-4 sm:py-3.5 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
-        aria-label="Tanya AI & Hubungi Admin GEN-CB"
+        aria-label="Tanya AI & Chat Admin WA GEN-CB"
       >
         <span className="absolute -top-1 -right-1 flex size-3">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full size-3 bg-emerald-300"></span>
         </span>
-        <Bot className="size-6 animate-pulse group-hover:scale-110 transition-transform" />
+        <Bot className="size-6 animate-bounce group-hover:scale-110 transition-transform" />
         <span className="hidden sm:inline font-semibold text-xs pr-1">Tanya AI & Admin WA</span>
       </button>
     </div>
