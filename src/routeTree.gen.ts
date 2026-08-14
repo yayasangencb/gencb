@@ -26,6 +26,7 @@ import { Route as AdminEventRouteImport } from './routes/admin/event'
 import { Route as AdminGaleriRouteImport } from './routes/admin/galeri'
 import { Route as AdminLiveRouteImport } from './routes/admin/live'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminMediaRouteImport } from './routes/admin/media'
 import { Route as AdminNotifikasiRouteImport } from './routes/admin/notifikasi'
 import { Route as AdminPendaftarRouteImport } from './routes/admin/pendaftar'
 import { Route as AdminProgramRouteImport } from './routes/admin/program'
@@ -125,6 +126,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminNotifikasiRoute = AdminNotifikasiRouteImport.update({
   id: '/notifikasi',
   path: '/notifikasi',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/admin/galeri': typeof AdminGaleriRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/notifikasi': typeof AdminNotifikasiRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/program': typeof AdminProgramRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/admin/galeri': typeof AdminGaleriRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/notifikasi': typeof AdminNotifikasiRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/program': typeof AdminProgramRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/admin/galeri': typeof AdminGaleriRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/notifikasi': typeof AdminNotifikasiRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/program': typeof AdminProgramRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/admin/galeri'
     | '/admin/live'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/notifikasi'
     | '/admin/pendaftar'
     | '/admin/program'
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/admin/galeri'
     | '/admin/live'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/notifikasi'
     | '/admin/pendaftar'
     | '/admin/program'
@@ -369,6 +380,7 @@ export interface FileRouteTypes {
     | '/admin/galeri'
     | '/admin/live'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/notifikasi'
     | '/admin/pendaftar'
     | '/admin/program'
@@ -524,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/notifikasi': {
       id: '/admin/notifikasi'
       path: '/notifikasi'
@@ -627,6 +646,7 @@ interface AdminRouteRouteChildren {
   AdminGaleriRoute: typeof AdminGaleriRoute
   AdminLiveRoute: typeof AdminLiveRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMediaRoute: typeof AdminMediaRoute
   AdminNotifikasiRoute: typeof AdminNotifikasiRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminProgramRoute: typeof AdminProgramRoute
@@ -645,6 +665,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminGaleriRoute: AdminGaleriRoute,
   AdminLiveRoute: AdminLiveRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMediaRoute: AdminMediaRoute,
   AdminNotifikasiRoute: AdminNotifikasiRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminProgramRoute: AdminProgramRoute,
