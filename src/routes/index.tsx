@@ -6,7 +6,9 @@ import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { StatCounter } from "@/components/site/stat-counter";
 import { StatusBadge } from "@/components/site/status-badge";
-import { events, gallery, images, news, ORG, partners, programs, stats, testimonials } from "@/data/gencb";
+import { events as defaultEvents, gallery as defaultGallery, images, news as defaultNews, ORG, partners as defaultPartners, programs as defaultPrograms, stats, testimonials } from "@/data/gencb";
+import { useCollection } from "@/lib/admin/store";
+import { seedEvents, seedGallery, seedNews, seedPrograms, seedSponsors, seedDonationPrograms, type EventRow, type GalleryRow, type NewsRow, type ProgramRow, type SponsorRow, type DonationProgramRow } from "@/lib/admin/seed";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,7 +29,30 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+function resolveImg(src?: string, fallback?: string) {
+  if (!src) return fallback || images.heroImg;
+  if (src.startsWith("data:") || src.startsWith("http") || src.startsWith("/")) return src;
+  if (images[src as keyof typeof images]) return images[src as keyof typeof images];
+  return fallback || images.heroImg;
+}
+
 function Index() {
+  const programsStore = useCollection<ProgramRow>("programs", seedPrograms);
+  const eventsStore = useCollection<EventRow>("events", seedEvents);
+  const newsStore = useCollection<NewsRow>("news", seedNews);
+  const galleryStore = useCollection<GalleryRow>("gallery", seedGallery);
+  const sponsorsStore = useCollection<SponsorRow>("sponsor", seedSponsors);
+  const donationStore = useCollection<DonationProgramRow>("donation-programs", seedDonationPrograms);
+
+  const activePrograms = programsStore.items.filter((p) => p.status === "AKTIF");
+  const publishedNews = newsStore.items.filter((n) => n.status === "PUBLISH");
+  const liveEvents = eventsStore.items;
+  const activeDonation = donationStore.items.find((d) => d.status === "AKTIF") || donationStore.items[0];
+
+  const partnerList = sponsorsStore.items.length
+    ? sponsorsStore.items.map((s) => s.name)
+    : defaultPartners;
+
   return (
     <>
       <section className="relative flex min-h-screen items-center overflow-hidden">
@@ -88,7 +113,7 @@ function Index() {
             {[
               { icon: Users, title: "3.200+ Peserta", desc: "Terlibat dalam kegiatan GEN-CB" },
               { icon: CalendarDays, title: "26 Kegiatan/Tahun", desc: "Terjadwal & terdokumentasi" },
-              { icon: HeartHandshake, title: "34 Mitra", desc: "Desa, sekolah, masjid, komunitas" },
+              { icon: HeartHandshake, title: `${partnerList.length}+ Mitra`, desc: "Desa, sekolah, masjid, komunitas" },
               { icon: MapPin, title: "Berbasis Desa", desc: "Dampak nyata di akar rumput" },
             ].map((item, i) => (
               <motion.div
@@ -118,36 +143,39 @@ function Index() {
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
         <SectionHeading
           label="Program Unggulan"
-          title="Enam pilar gerakan GEN-CB"
+          title="Pilar gerakan GEN-CB"
           description="Program berkelanjutan yang dirancang bersama masyarakat, dari pendidikan hingga teknologi."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {programs.map((p, i) => (
-            <Reveal key={p.slug} delay={i * 0.06}>
-              <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
-                <div className="relative h-44 overflow-hidden">
-                  <img
-                    src={p.image}
-                    alt={p.title}
-                    loading="lazy"
-                    width={1200}
-                    height={800}
-                    className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <span className="absolute left-4 top-4 rounded-full bg-gradient-accent px-3 py-1 text-[11px] font-semibold text-primary-foreground">
-                    {p.category}
-                  </span>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display text-lg font-semibold">{p.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
-                  <p className="mt-4 text-xs font-medium uppercase tracking-widest text-accent">
-                    Target: {p.target}
-                  </p>
-                </div>
-              </article>
-            </Reveal>
-          ))}
+          {(activePrograms.length ? activePrograms : defaultPrograms).map((p, i) => {
+            const imgSrc = resolveImg((p as { image?: string }).image, images.progPendidikan);
+            return (
+              <Reveal key={p.id || p.title} delay={i * 0.06}>
+                <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
+                  <div className="relative h-44 overflow-hidden">
+                    <img
+                      src={imgSrc}
+                      alt={p.title}
+                      loading="lazy"
+                      width={1200}
+                      height={800}
+                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute left-4 top-4 rounded-full bg-gradient-accent px-3 py-1 text-[11px] font-semibold text-primary-foreground">
+                      {p.category}
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="font-display text-lg font-semibold">{p.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
+                    <p className="mt-4 text-xs font-medium uppercase tracking-widest text-accent">
+                      Target: {p.target}
+                    </p>
+                  </div>
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 
@@ -159,38 +187,41 @@ function Index() {
             description="Pendaftaran online tersedia untuk kegiatan berstatus OPEN."
           />
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {events.slice(0, 4).map((e, i) => (
-              <Reveal key={e.slug} delay={i * 0.06}>
-                <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
-                  <div className="relative h-40 overflow-hidden">
-                    <img
-                      src={e.image}
-                      alt={e.title}
-                      loading="lazy"
-                      width={1200}
-                      height={800}
-                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute left-4 top-4">
-                      <StatusBadge status={e.status} />
+            {liveEvents.slice(0, 4).map((e, i) => {
+              const eventImg = resolveImg(e.image, images.heroImg);
+              return (
+                <Reveal key={e.id || e.slug} delay={i * 0.06}>
+                  <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
+                    <div className="relative h-40 overflow-hidden">
+                      <img
+                        src={eventImg}
+                        alt={e.title}
+                        loading="lazy"
+                        width={1200}
+                        height={800}
+                        className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute left-4 top-4">
+                        <StatusBadge status={e.status as "OPEN" | "SOON" | "ONGOING" | "CLOSED"} />
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    <h3 className="font-display text-base font-semibold">{e.title}</h3>
-                    <p className="mt-2 text-xs text-muted-foreground">{e.date}</p>
-                    <p className="text-xs text-muted-foreground">{e.location}</p>
-                    <p className="mt-3 text-xs font-medium text-accent">
-                      {e.registered}/{e.quota} peserta
-                    </p>
-                    <Button asChild variant="hero" size="sm" className="mt-5 w-full">
-                      <Link to="/event/$slug" params={{ slug: e.slug }}>
-                        Detail
-                      </Link>
-                    </Button>
-                  </div>
-                </article>
-              </Reveal>
-            ))}
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="font-display text-base font-semibold">{e.title}</h3>
+                      <p className="mt-2 text-xs text-muted-foreground">{e.date}</p>
+                      <p className="text-xs text-muted-foreground">{e.location}</p>
+                      <p className="mt-3 text-xs font-medium text-accent">
+                        {e.registered}/{e.quota} peserta
+                      </p>
+                      <Button asChild variant="hero" size="sm" className="mt-5 w-full">
+                        <Link to="/event/$slug" params={{ slug: e.slug || "mtq-desa-sasak-panjang" }}>
+                          Detail
+                        </Link>
+                      </Button>
+                    </div>
+                  </article>
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -202,28 +233,31 @@ function Index() {
           description="Dokumentasi dan pengumuman terbaru dari kegiatan GEN-CB."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {news.map((n, i) => (
-            <Reveal key={n.slug} delay={i * 0.08}>
-              <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
-                <img
-                  src={n.image}
-                  alt={n.title}
-                  loading="lazy"
-                  width={1200}
-                  height={800}
-                  className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="p-6">
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="font-semibold text-accent">{n.category}</span>
-                    <span>{n.date}</span>
+          {(publishedNews.length ? publishedNews : defaultNews).map((n, i) => {
+            const newsImg = resolveImg((n as { image?: string }).image, images.progKeagamaan);
+            return (
+              <Reveal key={n.id || n.title} delay={i * 0.08}>
+                <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
+                  <img
+                    src={newsImg}
+                    alt={n.title}
+                    loading="lazy"
+                    width={1200}
+                    height={800}
+                    className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="font-semibold text-accent">{n.category}</span>
+                      <span>{n.date}</span>
+                    </div>
+                    <h3 className="mt-3 font-display text-lg font-semibold">{n.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">{n.content || (n as { excerpt?: string }).excerpt}</p>
                   </div>
-                  <h3 className="mt-3 font-display text-lg font-semibold">{n.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{n.excerpt}</p>
-                </div>
-              </article>
-            </Reveal>
-          ))}
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 
@@ -231,23 +265,26 @@ function Index() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading label="Dokumentasi" title="Galeri kegiatan terbaru" />
           <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3">
-            {gallery.slice(0, 6).map((g, i) => (
-              <Reveal key={`${g.caption}-${i}`} delay={i * 0.05}>
-                <div className="group relative overflow-hidden rounded-3xl shadow-soft">
-                  <img
-                    src={g.src}
-                    alt={g.caption}
-                    loading="lazy"
-                    width={1200}
-                    height={800}
-                    className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-xs font-medium text-white">
-                    {g.caption}
+            {galleryStore.items.slice(0, 6).map((g, i) => {
+              const galImg = resolveImg(g.url, images.heroImg);
+              return (
+                <Reveal key={`${g.caption}-${i}`} delay={i * 0.05}>
+                  <div className="group relative overflow-hidden rounded-3xl shadow-soft">
+                    <img
+                      src={galImg}
+                      alt={g.caption}
+                      loading="lazy"
+                      width={1200}
+                      height={800}
+                      className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-xs font-medium text-white">
+                      {g.caption}
+                    </div>
                   </div>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -267,14 +304,23 @@ function Index() {
                   <Link to="/donasi">Donasi Sekarang</Link>
                 </Button>
               </div>
-              <div className="glass rounded-3xl p-6">
-                <p className="text-sm opacity-85">Program Donasi Aktif</p>
-                <p className="mt-1 font-display text-xl font-semibold">Beasiswa Anak Desa</p>
-                <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/20">
-                  <div className="h-full w-[68%] rounded-full bg-gradient-accent" />
+              {activeDonation && (
+                <div className="glass rounded-3xl p-6">
+                  <p className="text-sm opacity-85">Program Donasi Utama</p>
+                  <p className="mt-1 font-display text-xl font-semibold">{activeDonation.title}</p>
+                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/20">
+                    <div
+                      className="h-full rounded-full bg-gradient-accent"
+                      style={{
+                        width: `${Math.min(Math.round(((Number(activeDonation.collected) || 0) / (Number(activeDonation.target) || 1)) * 100), 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <p className="mt-3 text-xs opacity-85">
+                    Rp {Number(activeDonation.collected || 0).toLocaleString("id-ID")} dari target Rp {Number(activeDonation.target || 0).toLocaleString("id-ID")}
+                  </p>
                 </div>
-                <p className="mt-3 text-xs opacity-85">Rp 34.000.000 dari target Rp 50.000.000</p>
-              </div>
+              )}
             </div>
           </div>
         </Reveal>
@@ -290,7 +336,7 @@ function Index() {
             animate={{ x: ["0%", "-100%"] }}
             transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
           >
-            {[...partners, ...partners].map((p, i) => (
+            {[...partnerList, ...partnerList].map((p, i) => (
               <span
                 key={`${p}-${i}`}
                 className="whitespace-nowrap rounded-2xl border border-border/60 bg-card px-6 py-4 text-sm font-medium text-muted-foreground shadow-soft"

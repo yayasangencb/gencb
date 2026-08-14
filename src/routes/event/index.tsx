@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/site/page-hero";
 import { Reveal } from "@/components/site/reveal";
 import { StatusBadge } from "@/components/site/status-badge";
-import { events, eventCategories, eventStatuses, formatRupiah } from "@/data/events";
+import { events as defaultEvents, eventCategories, eventStatuses, formatRupiah } from "@/data/events";
+import { images } from "@/data/gencb";
+import { useCollection } from "@/lib/admin/store";
+import { seedEvents, type EventRow } from "@/lib/admin/seed";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/event/")({
@@ -27,18 +30,28 @@ export const Route = createFileRoute("/event/")({
   component: EventPage,
 });
 
+function resolveImg(src?: string, fallback?: string) {
+  if (!src) return fallback || images.heroImg;
+  if (src.startsWith("data:") || src.startsWith("http") || src.startsWith("/")) return src;
+  if (images[src as keyof typeof images]) return images[src as keyof typeof images];
+  return fallback || images.heroImg;
+}
+
 function EventPage() {
   const [category, setCategory] = useState<string>("Semua");
   const [status, setStatus] = useState<string>("SEMUA");
 
+  const eventsStore = useCollection<EventRow>("events", seedEvents);
+  const liveEvents = eventsStore.items.length ? eventsStore.items : (defaultEvents as unknown as EventRow[]);
+
   const filtered = useMemo(
     () =>
-      events.filter(
+      liveEvents.filter(
         (e) =>
           (category === "Semua" || e.category === category) &&
           (status === "SEMUA" || e.status === status),
       ),
-    [category, status],
+    [liveEvents, category, status],
   );
 
   return (
@@ -91,18 +104,23 @@ function EventPage() {
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          Menampilkan {filtered.length} dari {events.length} kegiatan.
+          Menampilkan {filtered.length} dari {liveEvents.length} kegiatan.
         </p>
 
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((e, i) => {
-            const pct = Math.min(100, Math.round((e.registered / e.quota) * 100));
+            const quota = Number(e.quota) || 1;
+            const registered = Number(e.registered) || 0;
+            const pct = Math.min(100, Math.round((registered / quota) * 100));
+            const imgSrc = resolveImg(e.image, images.heroImg);
+            const feeVal = Number(e.fee || 0);
+
             return (
-              <Reveal key={e.slug} delay={i * 0.05}>
+              <Reveal key={e.id || e.slug} delay={i * 0.05}>
                 <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
                   <div className="relative h-48 overflow-hidden">
                     <img
-                      src={e.image}
+                      src={imgSrc}
                       alt={e.title}
                       loading="lazy"
                       width={1200}
@@ -110,56 +128,56 @@ function EventPage() {
                       className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute left-4 top-4">
-                      <StatusBadge status={e.status} />
+                      <StatusBadge status={e.status as "OPEN" | "SOON" | "ONGOING" | "CLOSED"} />
                     </div>
-                    <span className="absolute right-4 top-4 rounded-full bg-background/85 px-3 py-1 text-[11px] font-semibold backdrop-blur-sm">
-                      {e.fee === 0 ? "Gratis" : formatRupiah(e.fee)}
+                    <span className="absolute right-4 top-4 rounded-full bg-black/60 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur">
+                      {feeVal > 0 ? formatRupiah(feeVal) : "Gratis"}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <span className="text-xs font-semibold uppercase tracking-widest text-accent">
-                      {e.category}
-                    </span>
-                    <h2 className="mt-2 font-display text-lg font-semibold">{e.title}</h2>
-                    <p className="mt-2 text-sm text-muted-foreground">{e.excerpt}</p>
-                    <div className="mt-4 space-y-2 text-xs text-muted-foreground">
-                      <p className="flex items-center gap-2">
-                        <CalendarDays className="size-4" /> {e.date}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <MapPin className="size-4" /> {e.location}
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Users className="size-4" /> {e.registered}/{e.quota} peserta
-                      </p>
+                    <div className="flex items-center gap-2 text-xs font-semibold text-accent">
+                      <span>{e.category}</span>
                     </div>
-                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary">
+                    <h2 className="mt-2 font-display text-lg font-semibold leading-snug">
+                      {e.title}
+                    </h2>
+                    <div className="mt-4 space-y-2 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <CalendarDays className="size-4 shrink-0 text-primary" />
+                        <span>{e.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="size-4 shrink-0 text-primary" />
+                        <span className="truncate">{e.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="size-4 shrink-0 text-primary" />
+                        <span>
+                          {registered}/{quota} Peserta
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-secondary">
                       <div
-                        className="h-full rounded-full bg-gradient-accent"
+                        className="h-full rounded-full bg-gradient-brand transition-all duration-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <div className="mt-auto flex gap-2 pt-6">
-                      <Button asChild variant="outline" size="sm" className="flex-1">
-                        <Link to="/event/$slug" params={{ slug: e.slug }}>
+
+                    <div className="mt-6 flex items-center gap-2">
+                      <Button asChild variant="outline" size="sm" className="flex-1 rounded-full">
+                        <Link to="/event/$slug" params={{ slug: e.slug || "mtq-desa-sasak-panjang" }}>
                           Detail
                         </Link>
                       </Button>
                       {e.status === "OPEN" ? (
-                        <Button asChild variant="hero" size="sm" className="flex-1">
-                          <Link to="/daftar/$slug" params={{ slug: e.slug }}>
+                        <Button asChild variant="accent" size="sm" className="flex-1 rounded-full">
+                          <Link to="/daftar/$slug" params={{ slug: e.slug || "mtq-desa-sasak-panjang" }}>
                             Daftar
                           </Link>
                         </Button>
-                      ) : (
-                        <Button variant="hero" size="sm" className="flex-1" disabled>
-                          {e.status === "CLOSED"
-                            ? "Ditutup"
-                            : e.status === "ONGOING"
-                              ? "Berlangsung"
-                              : "Segera"}
-                        </Button>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </article>
@@ -167,12 +185,6 @@ function EventPage() {
             );
           })}
         </div>
-
-        {filtered.length === 0 ? (
-          <p className="mt-16 text-center text-sm text-muted-foreground">
-            Belum ada kegiatan pada filter ini.
-          </p>
-        ) : null}
       </section>
     </>
   );
