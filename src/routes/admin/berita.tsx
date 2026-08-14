@@ -1,7 +1,18 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { RequireModule } from "@/components/admin/guard";
 import { ResourceManager } from "@/components/admin/resource-manager";
 import { DataTable } from "@/components/admin/data-table";
@@ -33,6 +44,7 @@ export const Route = createFileRoute("/admin/berita")({
 
 function BeritaAdmin() {
   const comments = useCollection<CommentRow>("comments", seedComments);
+  const [commentToDelete, setCommentToDelete] = useState<CommentRow | null>(null);
 
   return (
     <div className="space-y-10">
@@ -132,10 +144,7 @@ function BeritaAdmin() {
                 size="sm"
                 variant="outline"
                 className="text-destructive"
-                onClick={() => {
-                  comments.remove(row.id);
-                  toast.success("Komentar dihapus");
-                }}
+                onClick={() => setCommentToDelete(row)}
               >
                 Hapus
               </Button>
@@ -143,6 +152,32 @@ function BeritaAdmin() {
           )}
         />
       </section>
+
+      {/* Delete Comment Alert Dialog */}
+      <AlertDialog open={!!commentToDelete} onOpenChange={(o) => !o && setCommentToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus komentar ini?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Komentar dari {commentToDelete?.name} akan dihapus.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (commentToDelete) {
+                  comments.remove(commentToDelete.id);
+                  toast.success("Komentar telah dihapus");
+                }
+                setCommentToDelete(null);
+              }}
+            >
+              Ya, Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

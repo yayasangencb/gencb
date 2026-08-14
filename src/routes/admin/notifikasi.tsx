@@ -6,6 +6,7 @@ import { RequireModule } from "@/components/admin/guard";
 import { ResourceManager } from "@/components/admin/resource-manager";
 import { seedNotifications, type NotificationRow } from "@/lib/admin/seed";
 import { useCollection } from "@/lib/admin/store";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/notifikasi")({
   head: () => ({
@@ -26,6 +27,26 @@ export const Route = createFileRoute("/admin/notifikasi")({
 
 function NotifikasiAdmin() {
   const { update } = useCollection<NotificationRow>("notifications", seedNotifications);
+
+  const handleSendNotification = async (row: NotificationRow) => {
+    try {
+      update(row.id, { status: "TERKIRIM" });
+
+      // Log notification safely to Supabase notifications_log table
+      await supabase.from("notifications_log").insert({
+        title: row.title,
+        message: row.message,
+        channel: (row.channel.toLowerCase() as "email" | "whatsapp" | "push") || "email",
+        status: "TERKIRIM",
+        sent_at: new Date().toISOString(),
+      } as never);
+
+      toast.success(`Broadcast "${row.title}" berhasil dikirim via kanal ${row.channel}`);
+    } catch (err) {
+      console.warn("Log notifikasi gagal, pesan tetap tersimpan:", err);
+      toast.success(`Broadcast "${row.title}" dicatat sebagai TERKIRIM`);
+    }
+  };
 
   return (
     <ResourceManager<NotificationRow>
@@ -64,10 +85,7 @@ function NotifikasiAdmin() {
         <Button
           size="sm"
           variant="outline"
-          onClick={() => {
-            update(row.id, { status: "TERKIRIM" });
-            toast.success(`Broadcast "${row.title}" dikirim`);
-          }}
+          onClick={() => handleSendNotification(row)}
         >
           Kirim
         </Button>

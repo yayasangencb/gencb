@@ -110,6 +110,80 @@ function AdminLoginPage() {
               {loading ? "Memproses..." : "Masuk ke Dashboard"}
             </Button>
           </form>
+
+          <div className="mt-6 pt-4 border-t border-border space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground">Uji Akses Peran Admin:</p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs rounded-lg"
+                onClick={async () => {
+                  setEmail("superadmin@gencb.or.id");
+                  setPassword("admin123");
+                  const { session } = await loginAdmin("superadmin@gencb.or.id", "admin123");
+                  if (session) {
+                    toast.success(`Masuk sebagai ${session.name}`);
+                    navigate({ to: "/admin", replace: true });
+                  }
+                }}
+              >
+                Super Admin
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs rounded-lg"
+                onClick={async () => {
+                  setEmail("admin@gencb.or.id");
+                  setPassword("admin123");
+                  const { session } = await loginAdmin("admin@gencb.or.id", "admin123");
+                  if (session) {
+                    toast.success(`Masuk sebagai ${session.name}`);
+                    navigate({ to: "/admin", replace: true });
+                  }
+                }}
+              >
+                Admin
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs rounded-lg"
+                onClick={async () => {
+                  setEmail("editor@gencb.or.id");
+                  setPassword("admin123");
+                  const { session } = await loginAdmin("editor@gencb.or.id", "admin123");
+                  if (session) {
+                    toast.success(`Masuk sebagai ${session.name}`);
+                    navigate({ to: "/admin", replace: true });
+                  }
+                }}
+              >
+                Editor
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs rounded-lg"
+                onClick={async () => {
+                  setEmail("panitia@gencb.or.id");
+                  setPassword("admin123");
+                  const { session } = await loginAdmin("panitia@gencb.or.id", "admin123");
+                  if (session) {
+                    toast.success(`Masuk sebagai ${session.name}`);
+                    navigate({ to: "/admin", replace: true });
+                  }
+                }}
+              >
+                Panitia
+              </Button>
+            </div>
+          </div>
           <p className="mt-8 text-xs text-muted-foreground">
             Akses panel hanya diberikan oleh pengurus Yayasan Generasi Cerdas Beraksi.
           </p>
