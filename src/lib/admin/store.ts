@@ -52,7 +52,7 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           category: String(payload.category ?? "Pengumuman"),
           content: String(payload.content ?? ""),
           cover_image: String(payload.image ?? ""),
-          status: payload.status === "PUBLISH" ? "published" : "draft",
+          status: payload.status === "DRAFT" ? "draft" : "published",
           seo_title: String(payload.seoTitle ?? ""),
           seo_description: String(payload.seoDescription ?? ""),
         } as never);
@@ -63,7 +63,7 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           category: payload.category !== undefined ? String(payload.category) : undefined,
           content: payload.content !== undefined ? String(payload.content) : undefined,
           cover_image: payload.image !== undefined ? String(payload.image) : undefined,
-          status: payload.status !== undefined ? (payload.status === "PUBLISH" ? "published" : "draft") : undefined,
+          status: payload.status !== undefined ? (payload.status === "DRAFT" ? "draft" : "published") : undefined,
         } as never).eq("id", String(payload.id));
         if (error) console.warn("[Supabase RLS Notice] news update:", error.message);
       } else if (action === "delete") {
