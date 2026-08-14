@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 interface ImageDropzoneProps {
-  value?: string;
+  value?: string | undefined;
   onChange: (value: string) => void;
-  label?: string;
-  error?: string;
-  disabled?: boolean;
-  placeholder?: string;
+  label?: string | undefined;
+  error?: string | undefined;
+  disabled?: boolean | undefined;
+  placeholder?: string | undefined;
 }
 
 export function ImageDropzone({
@@ -61,13 +61,15 @@ export function ImageDropzone({
     if (disabled) return;
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileSelect(e.dataTransfer.files[0]);
+      const dropped = e.dataTransfer.files[0];
+      if (dropped) handleFileSelect(dropped);
     }
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      handleFileSelect(e.target.files[0]);
+      const picked = e.target.files[0];
+      if (picked) handleFileSelect(picked);
     }
   };
 
