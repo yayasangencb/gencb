@@ -17,7 +17,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   {
     id: "m-init",
     sender: "ai",
-    text: "Halo! 👋 Saya Asisten Virtual GEN-CB AI. Silakan tanyakan informasi seputar MTQ, Event, Program Jalan Sehat, Donasi, atau lokasi kami.\n\nJika ingin berbicara langsung dengan pengurus, ketik **chat admin** atau tekan tombol di bawah.",
+    text: "Halo! 👋 Selamat datang di Yayasan Generasi Cerdas Beraksi (GEN-CB).\n\nSaya Asisten AI Virtual. Silakan tanyakan info seputar **MTQ, Program Jalan Sehat, Rumah Belajar, Donasi, atau Lokasi**.\n\nJika ingin bicara langsung dengan pengurus, ketik **'chat admin'** atau klik tombol WhatsApp di bawah.",
     timestamp: "Baru saja",
   },
 ];
@@ -25,6 +25,8 @@ const INITIAL_MESSAGES: ChatMessage[] = [
 const SUGGESTED_QUESTIONS = [
   "Jadwal MTQ Desa",
   "Program Jalan Sehat",
+  "Berapa Biaya Pendaftaran?",
+  "Alamat Sekretariat",
   "Cara Donasi",
   "Chat Admin WA",
 ];
@@ -32,64 +34,113 @@ const SUGGESTED_QUESTIONS = [
 function getAiResponse(userText: string): { reply: string; redirectWa: boolean } {
   const lower = userText.toLowerCase().trim();
 
+  // Direct Admin Request
   if (
     lower.includes("chat admin") ||
     lower.includes("hubungi admin") ||
     lower.includes("admin wa") ||
     lower.includes("whatsapp") ||
     lower.includes("bicara admin") ||
-    lower.includes("kontak admin")
+    lower.includes("kontak admin") ||
+    lower.includes("ngobrol admin") ||
+    lower.includes("panggil admin") ||
+    lower.includes("operator")
   ) {
     return {
-      reply: "Baik, saya langsung alihkan Anda ke WhatsApp Admin GEN-CB (+62 857-7220-2454) untuk respon langsung...",
+      reply: "Tentu! Saya akan langsung menghubungkan Anda ke WhatsApp Admin GEN-CB (+62 857-7220-2454) untuk berbicara langsung dengan pengurus sekarang...",
       redirectWa: true,
     };
   }
 
-  if (lower.includes("mtq") || lower.includes("quran") || lower.includes("tilawah")) {
+  // Greetings & Intros
+  if (
+    lower === "halo" ||
+    lower === "hi" ||
+    lower === "p" ||
+    lower === "tes" ||
+    lower === "siang" ||
+    lower === "pagi" ||
+    lower === "malam" ||
+    lower.includes("assalamualaikum") ||
+    lower.includes("selamat pagi") ||
+    lower.includes("selamat siang") ||
+    lower.includes("selamat sore") ||
+    lower.includes("selamat malam") ||
+    lower.includes("permisi")
+  ) {
     return {
-      reply: "Kegiatan MTQ Desa Sasak Panjang 2026 menghadirkan 4 cabang lomba: Tilawah, Hifdzil Qur'an, Murottal, dan Adzan di Masjid Jami Al-Ikhlas. Pendaftaran 100% GRATIS! Anda dapat mendaftar melalui menu Event.",
+      reply: "Waalaikumsalam / Halo! Selamat datang di Yayasan Generasi Cerdas Beraksi (GEN-CB). 😊\n\nAda yang bisa saya bantu? Anda bisa tanyakan seputar:\n1. 📖 Pendaftaran MTQ & Lomba\n2. 🏃‍♂️ Program Jalan Sehat (Rutin 2 Mingguan)\n3. 🏓 Turnamen Tenis Meja & Olahraga\n4. 🎓 Rumah Belajar & Bimbingan Gratis\n5. 🤲 Program Donasi & Beasiswa\n6. 📍 Alamat & Kontak Sekretariat\n\nAtau ketik **'chat admin'** jika ingin tersambung ke WhatsApp Admin.",
       redirectWa: false,
     };
   }
 
-  if (lower.includes("jalan") || lower.includes("sehat") || lower.includes("olahraga")) {
+  // MTQ & Keagamaan
+  if (lower.includes("mtq") || lower.includes("quran") || lower.includes("tilawah") || lower.includes("adzan") || lower.includes("murottal") || lower.includes("hifdzil")) {
     return {
-      reply: "Program Jalan Sehat GEN-CB diselenggarakan rutin setiap 2 minggu sekali untuk seluruh warga dan pemuda desa. Kumpul pukul 06.00 WIB di Alun-Alun Desa Sasak Panjang.",
+      reply: "📖 **MTQ Desa Sasak Panjang 2026**\n\n• **Cabang Lomba**: Tilawah Al-Qur'an, Hifdzil Qur'an (Juz 30), Murottal, dan Adzan (Kategori Anak & Remaja).\n• **Lokasi**: Masjid Jami Al-Ikhlas, Desa Sasak Panjang.\n• **Waktu**: 12 September 2026 (Pukul 07.00 WIB - Selesai).\n• **Biaya Pendaftaran**: 100% GRATIS!\n• **Fasilitas**: Trophy/Piala, Piagam Sertifikat Resmi, dan Uang Pembinaan.\n\nAnda dapat mendaftar online melalui menu **Event** pada website kami. Mau bertanya langsung ke panitia? Ketik **'chat admin'**.",
       redirectWa: false,
     };
   }
 
-  if (lower.includes("tenis") || lower.includes("meja") || lower.includes("pingpong")) {
+  // Jalan Sehat
+  if (lower.includes("jalan") || lower.includes("sehat") || lower.includes("jalan santai") || lower.includes("2 minggu")) {
     return {
-      reply: "Turnamen Tenis Meja & GEN-CB Sport Community diadakan di Balai Warga Desa Sasak Panjang. Terbuka untuk umum dan pemuda desa.",
+      reply: "🏃‍♂️ **Program Jalan Sehat (Rutin 2 Minggu Sekali)**\n\n• **Jadwal**: Setiap hari Minggu (2 minggu sekali) pukul 06.00 WIB.\n• **Titik Kumpul**: Lapangan / Alun-Alun Desa Sasak Panjang.\n• **Peserta**: Terbuka gratis untuk seluruh warga desa, keluarga, & pemuda.\n• **Benefit**: Olahraga santai bersama, doorprize menarik, & kupon sembako.\n\nSilakan langsung datang ke lokasi saat pelaksanaan atau tanyakan admin via WhatsApp!",
       redirectWa: false,
     };
   }
 
-  if (lower.includes("donasi") || lower.includes("beasiswa") || lower.includes("rekening") || lower.includes("qris")) {
+  // Tenis Meja & Olahraga
+  if (lower.includes("tenis") || lower.includes("meja") || lower.includes("pingpong") || lower.includes("sport") || lower.includes("liga")) {
     return {
-      reply: "Donasi GEN-CB disalurkan untuk operasional Rumah Belajar gratis, Beasiswa Anak Desa, dan santunan yatim. Pembayaran dapat dilakukan via Transfer Bank atau QRIS pada menu Donasi.",
+      reply: "🏓 **GEN-CB Sport Community & Turnamen Tenis Meja**\n\n• **Kegiatan**: Latihan rutin dan turnamen tenis meja antar-warga.\n• **Lokasi**: Balai Warga & Sekretariat GEN-CB Desa Sasak Panjang.\n• **Peserta**: Pemuda, dewasa, dan pencinta olahraga tenis meja.\n• **Pendaftaran**: Terbuka secara berkala melalui menu Event.",
       redirectWa: false,
     };
   }
 
-  if (lower.includes("lokasi") || lower.includes("alamat") || lower.includes("mana")) {
+  // Rumah Belajar & Pendidikan
+  if (lower.includes("belajar") || lower.includes("rumah belajar") || lower.includes("pendidikan") || lower.includes("les") || lower.includes("kursus") || lower.includes("sekolah")) {
     return {
-      reply: "Sekretariat GEN-CB berlokasi di Jl. Raya Sasak Panjang No. 12, Kec. Tajurhalang, Kabupaten Bogor, Jawa Barat.",
+      reply: "🎓 **Program Rumah Belajar Generasi**\n\n• **Layanan**: Bimbingan belajar gratis (Matematika, Bahasa Inggris, Membaca & Mengaji) untuk anak SD–SMA.\n• **Siswa Aktif**: 300+ siswa didampingi relawan pengajar mahasiswa.\n• **Jadwal**: Setiap Selasa & Kamis sore serta Sabtu pagi.\n• **Biaya**: 100% GRATIS untuk seluruh warga desa.",
       redirectWa: false,
     };
   }
 
-  if (lower.includes("relawan") || lower.includes("daftar") || lower.includes("gabung")) {
+  // Donasi & Beasiswa
+  if (lower.includes("donasi") || lower.includes("beasiswa") || lower.includes("zakat") || lower.includes("infaq") || lower.includes("sedekah") || lower.includes("rekening") || lower.includes("qris")) {
     return {
-      reply: "Anda dapat bergabung menjadi relawan pengajar Rumah Belajar atau panitia kegiatan dengan mendaftar di formulir kegiatan kami atau menghubungi Admin via WhatsApp.",
+      reply: "🤲 **Program Donasi & Beasiswa Anak Desa**\n\n• **Pilar Penyaluran**: Operasional Rumah Belajar, Beasiswa Yatim & Dhuafa, serta Paket Sembako.\n• **Metode Donasi**: Transfer Bank Resmi & QRIS Instant.\n• **Transparansi**: Donasi tercatat otomatis dan dapat dipantau di menu Donasi.\n\nTerima kasih atas kebaikan Anda dalam mendukung pendidikan dan sosial anak-anak desa!",
       redirectWa: false,
     };
   }
 
+  // Relawan / Gabung Panitia
+  if (lower.includes("relawan") || lower.includes("volunteer") || lower.includes("gabung") || lower.includes("pengajar") || lower.includes("panitia")) {
+    return {
+      reply: "🤝 **Bergabung Menjadi Relawan GEN-CB**\n\nKami sangat terbuka menerima relawan pengajar Rumah Belajar, relawan dokumentasi, maupun panitia event kepemudaan.\n\nSilakan isi form relawan via website atau ketik **'chat admin'** untuk mendaftar via WhatsApp Pengurus.",
+      redirectWa: false,
+    };
+  }
+
+  // Lokasi & Alamat Kontak
+  if (lower.includes("lokasi") || lower.includes("alamat") || lower.includes("mana") || lower.includes("dimana") || lower.includes("sekretariat") || lower.includes("telepon") || lower.includes("nomor")) {
+    return {
+      reply: "📍 **Lokasi & Alamat Sekretariat GEN-CB**\n\n• **Alamat**: Jl. Raya Sasak Panjang No. 12, Desa Sasak Panjang, Kec. Tajurhalang, Kab. Bogor, Jawa Barat 16320.\n• **WhatsApp Admin**: +62 857-7220-2454\n• **Email Resmi**: halo@gencb.or.id\n• **Jam Operasional**: Senin – Sabtu (08.00 – 17.00 WIB)",
+      redirectWa: false,
+    };
+  }
+
+  // Biaya Pendaftaran
+  if (lower.includes("biaya") || lower.includes("bayar") || lower.includes("harga") || lower.includes("gratis")) {
+    return {
+      reply: "💡 **Informasi Biaya**\n\nHampir seluruh kegiatan GEN-CB (seperti MTQ Desa, Program Jalan Sehat, dan Rumah Belajar) adalah **100% GRATIS** alias tanpa dipungut biaya apapun! Untuk event khusus turnamen, biaya kontribusi tertera di detail event.",
+      redirectWa: false,
+    };
+  }
+
+  // Default fallback response
   return {
-    reply: "Terima kasih atas pertanyaan Anda! Saya Asisten AI GEN-CB. Saya bisa memberikan info seputar Event, Program, Donasi, atau Lokasi. Jika butuh bantuan spesifik dari pengurus, silakan ketik **chat admin** untuk tersambung ke WhatsApp.",
+    reply: `Terima kasih atas pertanyaannya: "${userText}" 😊\n\nSaya Asisten AI Virtual GEN-CB. Saya dapat menginfokan seputar **MTQ, Jalan Sehat, Tenis Meja, Rumah Belajar, Donasi, atau Alamat Sekretariat**.\n\nJika Anda ingin bertanya sesuatu yang spesifik langsung kepada pengurus yayasan, silakan ketik **'chat admin'** atau klik tombol **Chat Admin WA** di bawah ini.`,
     redirectWa: false,
   };
 }
@@ -146,14 +197,14 @@ export function WhatsAppBubble() {
       if (redirectWa) {
         setTimeout(() => openWhatsApp(text), 1200);
       }
-    }, 400);
+    }, 450);
   };
 
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3 font-sans select-none print:hidden">
       {/* AI Chat Window */}
       {isOpen && (
-        <div className="w-[330px] sm:w-[380px] h-[460px] rounded-3xl border border-border bg-card text-card-foreground shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200 backdrop-blur-md">
+        <div className="w-[330px] sm:w-[380px] h-[480px] rounded-3xl border border-border bg-card text-card-foreground shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200 backdrop-blur-md">
           {/* Header */}
           <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 p-4 text-white flex items-center justify-between shadow-sm shrink-0">
             <div className="flex items-center gap-3">
@@ -171,7 +222,7 @@ export function WhatsAppBubble() {
                   </span>
                 </div>
                 <p className="text-[11px] text-emerald-100/90 mt-0.5 flex items-center gap-1">
-                  <Sparkles className="size-3 text-emerald-300" /> Tanya Jawab Virtual & WA Admin
+                  <Sparkles className="size-3 text-emerald-300" /> Jawab Otomatis & Alih ke WA Admin
                 </p>
               </div>
             </div>
@@ -197,7 +248,7 @@ export function WhatsAppBubble() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[82%] rounded-2xl p-3 text-xs leading-relaxed shadow-xs ${
+                  className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed shadow-xs ${
                     m.sender === "user"
                       ? "bg-emerald-600 text-white rounded-br-none"
                       : "bg-background text-foreground border border-border/60 rounded-bl-none"
@@ -234,7 +285,7 @@ export function WhatsAppBubble() {
                 <div className="size-7 rounded-xl bg-emerald-600/10 text-emerald-600 flex items-center justify-center shrink-0">
                   <Bot className="size-4 animate-bounce" />
                 </div>
-                <span className="italic text-[11px]">Asisten AI sedang mengetik...</span>
+                <span className="italic text-[11px]">Asisten AI sedang berpikir...</span>
               </div>
             )}
             <div ref={chatBottomRef} />
