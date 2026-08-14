@@ -67,11 +67,11 @@ export const seedNews: NewsRow[] = [
   },
   {
     id: "n-4",
-    title: "Laporan Tahunan GEN-CB 2026",
+    title: "Draft: Laporan Tahunan GEN-CB 2026",
     category: "Pengumuman",
     author: "Ahmad Fauzan",
     date: "2026-08-01",
-    status: "PUBLISH",
+    status: "DRAFT",
     tags: "laporan, transparansi",
     seoTitle: "Laporan Tahunan GEN-CB 2026",
     seoDescription: "Ringkasan capaian program dan penggunaan dana sepanjang 2026.",
@@ -96,7 +96,7 @@ export const seedComments: CommentRow[] = [
     name: "Ibu Ratna",
     message: "Apakah anak usia 7 tahun boleh ikut cabang murottal?",
     date: "2026-07-25",
-    status: "APPROVED",
+    status: "PENDING",
   },
   {
     id: "c-2",
@@ -109,10 +109,10 @@ export const seedComments: CommentRow[] = [
   {
     id: "c-3",
     news: "Aksi Bersih Desa Libatkan 120 Relawan Muda",
-    name: "Ahmad",
-    message: "Alhamdulillah sangat bermanfaat untuk warga.",
+    name: "promo123",
+    message: "Klik link ini untuk hadiah...",
     date: "2026-07-02",
-    status: "APPROVED",
+    status: "SPAM",
   },
 ];
 
@@ -139,7 +139,7 @@ export const seedEvents: EventRow[] = events.map((e, i) => ({
   title: e.title,
   slug: e.slug,
   category: e.category,
-  status: e.status === "CLOSED" ? "OPEN" : e.status,
+  status: e.status,
   date: e.date,
   location: e.location,
   mapQuery: e.mapQuery,
@@ -171,7 +171,7 @@ export const seedPrograms: ProgramRow[] = [
   { id: "p-4", title: "Bakti Sosial & Santunan", category: "Sosial", target: "Masyarakat Umum", description: "Santunan yatim dan paket sembako.", status: "AKTIF" },
   { id: "p-5", title: "GEN-CB Sport Community & Tenis Meja", category: "Olahraga", target: "Pemuda & Warga", description: "Turnamen tenis meja dan liga kampung.", status: "AKTIF" },
   { id: "p-6", title: "Aksi Desa Hijau", category: "Lingkungan", target: "Warga & Relawan", description: "Bank sampah dan penanaman pohon.", status: "AKTIF" },
-  { id: "p-7", title: "Kelas Digital Muda", category: "Teknologi", target: "Pemuda 15–25 tahun", description: "Pelatihan desain dan literasi digital.", status: "AKTIF" },
+  { id: "p-7", title: "Kelas Digital Muda", category: "Teknologi", target: "Pemuda 15–25 tahun", description: "Pelatihan desain dan literasi digital.", status: "ARSIP" },
 ];
 
 export type BannerRow = {
@@ -187,7 +187,7 @@ export type BannerRow = {
 export const seedBanners: BannerRow[] = [
   { id: "b-1", title: "Membangun Generasi Cerdas & Berdampak", subtitle: "Bergabung jadi relawan GEN-CB", ctaLabel: "Jelajahi Program", ctaLink: "/program", order: 1, status: "AKTIF" },
   { id: "b-2", title: "MTQ Desa Sasak Panjang 2026", subtitle: "Pendaftaran dibuka sampai 5 September", ctaLabel: "Daftar Sekarang", ctaLink: "/event/mtq-desa-sasak-panjang", order: 2, status: "AKTIF" },
-  { id: "b-3", title: "Donasi Rumah Belajar", subtitle: "Dukung operasional kelas gratis", ctaLabel: "Donasi", ctaLink: "/donasi", order: 3, status: "AKTIF" },
+  { id: "b-3", title: "Donasi Rumah Belajar", subtitle: "Dukung operasional kelas gratis", ctaLabel: "Donasi", ctaLink: "/donasi", order: 3, status: "NONAKTIF" },
 ];
 
 export type GalleryRow = {
@@ -220,7 +220,7 @@ export const seedSponsors: SponsorRow[] = [
   { id: "s-1", name: "Pemerintah Desa Sasak Panjang", type: "PEMERINTAH", contact: "0251-000111", website: "sasakpanjang.desa.id", status: "AKTIF" },
   { id: "s-2", name: "DKM Al-Ikhlas", type: "MITRA", contact: "0812-1111-2222", website: "-", status: "AKTIF" },
   { id: "s-3", name: "Komunitas Literasi Bogor", type: "MITRA", contact: "0813-3333-4444", website: "literasibogor.id", status: "AKTIF" },
-  { id: "s-4", name: "Toko Berkah Jaya", type: "SPONSOR", contact: "0857-5555-6666", website: "-", status: "AKTIF" },
+  { id: "s-4", name: "Toko Berkah Jaya", type: "SPONSOR", contact: "0857-5555-6666", website: "-", status: "NONAKTIF" },
 ];
 
 export type ParticipantRow = {

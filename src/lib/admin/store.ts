@@ -40,10 +40,11 @@ export function newId() {
     : Math.random().toString(36).slice(2);
 }
 
-// Asynchronously sync local updates with Supabase in background
+// Asynchronously sync local updates with Supabase Database in background
 async function syncToSupabase(key: string, action: "insert" | "update" | "delete", payload: Record<string, unknown>) {
   try {
     if (key === "news") {
+      const isDraft = payload.status === "DRAFT";
       if (action === "insert") {
         const { error } = await supabase.from("news").insert({
           id: String(payload.id),
@@ -51,12 +52,13 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           slug: String(payload.slug ?? `berita-${Date.now()}`),
           category: String(payload.category ?? "Pengumuman"),
           content: String(payload.content ?? ""),
-          cover_image: String(payload.image ?? ""),
-          status: payload.status === "DRAFT" ? "draft" : "published",
-          seo_title: String(payload.seoTitle ?? ""),
-          seo_description: String(payload.seoDescription ?? ""),
+          cover_image: String(payload.image ?? payload.cover_image ?? ""),
+          status: isDraft ? "draft" : "published",
+          published_at: isDraft ? null : new Date().toISOString(),
+          seo_title: String(payload.seoTitle ?? payload.title ?? ""),
+          seo_description: String(payload.seoDescription ?? payload.content ?? ""),
         } as never);
-        if (error) console.warn("[Supabase RLS Notice] news insert:", error.message);
+        if (error) console.warn("[Supabase Sync] news insert:", error.message);
       } else if (action === "update") {
         const { error } = await supabase.from("news").update({
           title: payload.title !== undefined ? String(payload.title) : undefined,
@@ -65,10 +67,10 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           cover_image: payload.image !== undefined ? String(payload.image) : undefined,
           status: payload.status !== undefined ? (payload.status === "DRAFT" ? "draft" : "published") : undefined,
         } as never).eq("id", String(payload.id));
-        if (error) console.warn("[Supabase RLS Notice] news update:", error.message);
+        if (error) console.warn("[Supabase Sync] news update:", error.message);
       } else if (action === "delete") {
         const { error } = await supabase.from("news").delete().eq("id", String(payload.id));
-        if (error) console.warn("[Supabase RLS Notice] news delete:", error.message);
+        if (error) console.warn("[Supabase Sync] news delete:", error.message);
       }
     } else if (key === "events") {
       if (action === "insert") {
@@ -77,7 +79,7 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           title: String(payload.title ?? ""),
           slug: String(payload.slug ?? `event-${Date.now()}`),
           category: String(payload.category ?? "Umum"),
-          status: (payload.status as string)?.toLowerCase() ?? "open",
+          status: payload.status ? String(payload.status).toLowerCase() : "open",
           quota: Number(payload.quota ?? 100),
           registered_count: Number(payload.registered ?? 0),
           price: Number(payload.fee ?? 0),
@@ -85,19 +87,82 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           location_text: String(payload.location ?? ""),
           poster_url: String(payload.image ?? ""),
         } as never);
-        if (error) console.warn("[Supabase RLS Notice] events insert:", error.message);
+        if (error) console.warn("[Supabase Sync] events insert:", error.message);
       } else if (action === "update") {
         const { error } = await supabase.from("events").update({
           title: payload.title !== undefined ? String(payload.title) : undefined,
-          status: payload.status !== undefined ? (payload.status as string).toLowerCase() : undefined,
+          status: payload.status !== undefined ? String(payload.status).toLowerCase() : undefined,
           quota: payload.quota !== undefined ? Number(payload.quota) : undefined,
           registered_count: payload.registered !== undefined ? Number(payload.registered) : undefined,
           price: payload.fee !== undefined ? Number(payload.fee) : undefined,
+          poster_url: payload.image !== undefined ? String(payload.image) : undefined,
+          location_text: payload.location !== undefined ? String(payload.location) : undefined,
         } as never).eq("id", String(payload.id));
-        if (error) console.warn("[Supabase RLS Notice] events update:", error.message);
+        if (error) console.warn("[Supabase Sync] events update:", error.message);
       } else if (action === "delete") {
         const { error } = await supabase.from("events").delete().eq("id", String(payload.id));
-        if (error) console.warn("[Supabase RLS Notice] events delete:", error.message);
+        if (error) console.warn("[Supabase Sync] events delete:", error.message);
+      }
+    } else if (key === "programs") {
+      if (action === "insert") {
+        const { error } = await supabase.from("programs").insert({
+          id: String(payload.id),
+          title: String(payload.title ?? ""),
+          category: String(payload.category ?? "Pendidikan"),
+          description: String(payload.description ?? ""),
+          target_text: String(payload.target ?? ""),
+          cover_image: String(payload.image ?? ""),
+          is_published: payload.status !== "ARSIP",
+        } as never);
+        if (error) console.warn("[Supabase Sync] programs insert:", error.message);
+      } else if (action === "update") {
+        const { error } = await supabase.from("programs").update({
+          title: payload.title !== undefined ? String(payload.title) : undefined,
+          category: payload.category !== undefined ? String(payload.category) : undefined,
+          description: payload.description !== undefined ? String(payload.description) : undefined,
+          target_text: payload.target !== undefined ? String(payload.target) : undefined,
+          cover_image: payload.image !== undefined ? String(payload.image) : undefined,
+          is_published: payload.status !== undefined ? payload.status !== "ARSIP" : undefined,
+        } as never).eq("id", String(payload.id));
+        if (error) console.warn("[Supabase Sync] programs update:", error.message);
+      } else if (action === "delete") {
+        const { error } = await supabase.from("programs").delete().eq("id", String(payload.id));
+        if (error) console.warn("[Supabase Sync] programs delete:", error.message);
+      }
+    } else if (key === "gallery") {
+      if (action === "insert") {
+        const { error } = await supabase.from("gallery_media").insert({
+          id: String(payload.id),
+          album_id: "00000000-0000-0000-0000-000000000000",
+          url: String(payload.url ?? payload.src ?? ""),
+          caption: String(payload.caption ?? ""),
+          media_type: payload.type === "VIDEO" ? "VIDEO" : "FOTO",
+        } as never);
+        if (error) console.warn("[Supabase Sync] gallery insert:", error.message);
+      } else if (action === "update") {
+        const { error } = await supabase.from("gallery_media").update({
+          url: payload.url !== undefined ? String(payload.url) : undefined,
+          caption: payload.caption !== undefined ? String(payload.caption) : undefined,
+        } as never).eq("id", String(payload.id));
+        if (error) console.warn("[Supabase Sync] gallery update:", error.message);
+      } else if (action === "delete") {
+        const { error } = await supabase.from("gallery_media").delete().eq("id", String(payload.id));
+        if (error) console.warn("[Supabase Sync] gallery delete:", error.message);
+      }
+    } else if (key === "sponsor") {
+      if (action === "insert") {
+        const { error } = await supabase.from("partners").insert({
+          id: String(payload.id),
+          name: String(payload.name ?? ""),
+          is_active: payload.status !== "NONAKTIF",
+        } as never);
+        if (error) console.warn("[Supabase Sync] partners insert:", error.message);
+      } else if (action === "update") {
+        const { error } = await supabase.from("partners").update({
+          name: payload.name !== undefined ? String(payload.name) : undefined,
+          is_active: payload.status !== undefined ? payload.status !== "NONAKTIF" : undefined,
+        } as never).eq("id", String(payload.id));
+        if (error) console.warn("[Supabase Sync] partners update:", error.message);
       }
     } else if (key === "donation-programs") {
       if (action === "insert") {
@@ -108,7 +173,7 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           collected_amount: Number(payload.collected ?? 0),
           is_active: payload.status === "AKTIF",
         } as never);
-        if (error) console.warn("[Supabase RLS Notice] donation_programs insert:", error.message);
+        if (error) console.warn("[Supabase Sync] donation_programs insert:", error.message);
       } else if (action === "update") {
         const { error } = await supabase.from("donation_programs").update({
           title: payload.title !== undefined ? String(payload.title) : undefined,
@@ -116,7 +181,7 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           collected_amount: payload.collected !== undefined ? Number(payload.collected) : undefined,
           is_active: payload.status !== undefined ? payload.status === "AKTIF" : undefined,
         } as never).eq("id", String(payload.id));
-        if (error) console.warn("[Supabase RLS Notice] donation_programs update:", error.message);
+        if (error) console.warn("[Supabase Sync] donation_programs update:", error.message);
       }
     } else if (key === "notifications") {
       if (action === "insert" || action === "update") {
@@ -126,7 +191,7 @@ async function syncToSupabase(key: string, action: "insert" | "update" | "delete
           channel: ((payload.channel as string)?.toLowerCase() as "email" | "whatsapp" | "push") ?? "email",
           status: String(payload.status ?? "DRAFT"),
         } as never);
-        if (error) console.warn("[Supabase RLS Notice] notifications_log insert:", error.message);
+        if (error) console.warn("[Supabase Sync] notifications_log insert:", error.message);
       }
     }
   } catch (err) {
@@ -157,7 +222,7 @@ export function useCollection<T extends Entity>(key: string, seed: T[]) {
               category: n.category,
               author: "Nabila Rahmawati",
               date: n.published_at ? n.published_at.slice(0, 10) : n.created_at.slice(0, 10),
-              status: n.status === "published" ? "PUBLISH" : "DRAFT",
+              status: n.status === "draft" ? "DRAFT" : "PUBLISH",
               tags: (n.tags ?? []).join(", "),
               seoTitle: n.seo_title ?? n.title,
               seoDescription: n.seo_description ?? "",
@@ -186,6 +251,33 @@ export function useCollection<T extends Entity>(key: string, seed: T[]) {
               committee: "Ahmad Fauzan, Nabila Rahmawati",
               description: e.description ?? "",
               image: e.poster_url ?? "",
+            })) as unknown as T[];
+            write(key, mapped);
+          }
+        } else if (key === "programs") {
+          const { data, error } = await supabase.from("programs").select("*").order("created_at", { ascending: false });
+          if (!error && data && data.length && isMounted) {
+            const mapped: T[] = data.map((p) => ({
+              id: p.id,
+              title: p.title,
+              category: p.category,
+              target: p.target_text ?? "Masyarakat Umum",
+              description: p.description ?? "",
+              status: p.is_published ? "AKTIF" : "ARSIP",
+              image: p.cover_image ?? "",
+            })) as unknown as T[];
+            write(key, mapped);
+          }
+        } else if (key === "gallery") {
+          const { data, error } = await supabase.from("gallery_media").select("*").order("created_at", { ascending: false });
+          if (!error && data && data.length && isMounted) {
+            const mapped: T[] = data.map((g) => ({
+              id: g.id,
+              caption: g.caption ?? "Dokumentasi GEN-CB",
+              album: "Galeri Utama",
+              type: g.media_type === "VIDEO" ? "VIDEO" : "FOTO",
+              date: g.created_at ? g.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
+              url: g.url ?? "",
             })) as unknown as T[];
             write(key, mapped);
           }

@@ -86,12 +86,7 @@ export function ResourceManager<T extends Entity>({
   const openForm = (row?: T) => {
     const base: Record<string, string> = {};
     fields.forEach((f) => {
-      let value = row ? (row as unknown as Record<string, unknown>)[f.key] : "";
-      if (!row && f.key === "status" && !value && f.options) {
-        if (f.options.includes("PUBLISH")) value = "PUBLISH";
-        else if (f.options.includes("OPEN")) value = "OPEN";
-        else if (f.options.includes("AKTIF")) value = "AKTIF";
-      }
+      const value = row ? (row as unknown as Record<string, unknown>)[f.key] : "";
       base[f.key] = value === undefined || value === null ? "" : String(value);
     });
     setDraft(base);
