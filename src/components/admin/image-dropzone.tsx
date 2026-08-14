@@ -1,8 +1,9 @@
 import { useState, useRef, type DragEvent, type ChangeEvent } from "react";
-import { UploadCloud, X, Image as ImageIcon, Link as LinkIcon, RefreshCw } from "lucide-react";
+import { UploadCloud, X, Image as ImageIcon, Link as LinkIcon, RefreshCw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { uploadMedia, validateImage } from "@/lib/cloud/media";
 
 interface ImageDropzoneProps {
   value?: string | undefined;
@@ -11,6 +12,7 @@ interface ImageDropzoneProps {
   error?: string | undefined;
   disabled?: boolean | undefined;
   placeholder?: string | undefined;
+  folder?: string | undefined;
 }
 
 export function ImageDropzone({
@@ -20,26 +22,30 @@ export function ImageDropzone({
   error,
   disabled = false,
   placeholder = "Seret & lepas foto di sini, atau klik untuk memilih berkas",
+  folder = "general",
 }: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlDraft, setUrlDraft] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      alert("Hanya berkas gambar (JPG, PNG, WEBP, GIF, SVG) yang diperbolehkan.");
+  const handleFileSelect = async (file: File) => {
+    const invalid = validateImage(file);
+    if (invalid) {
+      setUploadError(invalid);
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      if (result) {
-        onChange(result);
-      }
-    };
-    reader.readAsDataURL(file);
+    setUploadError(null);
+    setUploading(true);
+    const { asset, error: err } = await uploadMedia(file, folder);
+    setUploading(false);
+    if (err || !asset) {
+      setUploadError(err ?? "Gagal mengunggah berkas.");
+      return;
+    }
+    onChange(asset.url);
   };
 
   const onDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -62,15 +68,16 @@ export function ImageDropzone({
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const dropped = e.dataTransfer.files[0];
-      if (dropped) handleFileSelect(dropped);
+      if (dropped) void handleFileSelect(dropped);
     }
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const picked = e.target.files[0];
-      if (picked) handleFileSelect(picked);
+      if (picked) void handleFileSelect(picked);
     }
+    e.target.value = "";
   };
 
   const handleApplyUrl = () => {
@@ -118,7 +125,7 @@ export function ImageDropzone({
           </div>
           <div className="p-2 flex items-center justify-between text-xs text-muted-foreground truncate">
             <span className="truncate max-w-[200px]" title={value}>
-              {value.startsWith("data:") ? "Berkas diunggah (Base64)" : value}
+              {value}
             </span>
             <button
               type="button"
@@ -152,11 +159,16 @@ export function ImageDropzone({
             )}
           </div>
 
-          <p className="text-sm font-semibold text-foreground mb-1">{label}</p>
+          <p className="text-sm font-semibold text-foreground mb-1">
+            {uploading ? "Mengunggah berkas..." : label}
+          </p>
           <p className="text-xs text-muted-foreground max-w-xs">{placeholder}</p>
           <p className="text-[10px] text-muted-foreground/70 mt-2 font-medium">
-            Mendukung JPG, PNG, WEBP, GIF, SVG (seret berkas langsung ke sini)
+            JPG, PNG, WEBP, GIF, SVG — maksimal 5 MB
           </p>
+          {uploading ? (
+            <Loader2 className="mt-2 size-4 animate-spin text-primary" />
+          ) : null}
 
           <div className="mt-3 flex items-center gap-2">
             <Button
@@ -216,7 +228,9 @@ export function ImageDropzone({
         disabled={disabled}
       />
 
-      {error && <p className="text-xs font-medium text-destructive">{error}</p>}
+      {(error || uploadError) && (
+        <p className="text-xs font-medium text-destructive">{error || uploadError}</p>
+      )}
     </div>
   );
 }
