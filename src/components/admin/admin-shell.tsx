@@ -20,6 +20,7 @@ import {
   Users,
   UserCog,
   ClipboardList,
+  FolderOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +44,7 @@ const menu: { to: string; label: string; module: AdminModule; icon: typeof Layou
   { to: "/admin/program", label: "Kelola Program", module: "program", icon: Sparkles },
   { to: "/admin/banner", label: "Banner / Hero", module: "banner", icon: ImageIcon },
   { to: "/admin/galeri", label: "Kelola Galeri", module: "galeri", icon: ImageIcon },
+  { to: "/admin/media", label: "Media Library", module: "media", icon: FolderOpen },
   { to: "/admin/sponsor", label: "Sponsor & Mitra", module: "sponsor", icon: Handshake },
   { to: "/admin/pendaftar", label: "Pendaftar Event", module: "pendaftar", icon: ClipboardList },
   { to: "/admin/sertifikat", label: "Kelola Sertifikat", module: "sertifikat", icon: Award },
