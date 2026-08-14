@@ -29,11 +29,8 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function resolveImg(src?: string, fallback?: string) {
-  if (!src) return fallback || images.heroImg;
-  if (src.startsWith("data:") || src.startsWith("http") || src.startsWith("/")) return src;
-  if (images[src as keyof typeof images]) return images[src as keyof typeof images];
-  return fallback || images.heroImg;
+function resolveImg(src?: string, category?: string, fallback?: string) {
+  return getDummyImage(src, category, fallback);
 }
 
 function Index() {
@@ -148,7 +145,7 @@ function Index() {
         />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {(activePrograms.length ? activePrograms : defaultPrograms).map((p, i) => {
-            const imgSrc = resolveImg((p as { image?: string }).image, images.progPendidikan);
+            const imgSrc = resolveImg((p as { image?: string }).image, p.category, images.progPendidikan);
             return (
               <Reveal key={p.id || p.title} delay={i * 0.06}>
                 <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
@@ -188,7 +185,7 @@ function Index() {
           />
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {liveEvents.slice(0, 4).map((e, i) => {
-              const eventImg = resolveImg(e.image, images.heroImg);
+              const eventImg = resolveImg(e.image, e.category, images.heroImg);
               return (
                 <Reveal key={e.id || e.slug} delay={i * 0.06}>
                   <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
@@ -234,7 +231,7 @@ function Index() {
         />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {(publishedNews.length ? publishedNews : defaultNews).map((n, i) => {
-            const newsImg = resolveImg((n as { image?: string }).image, images.progKeagamaan);
+            const newsImg = resolveImg((n as { image?: string }).image, n.category, images.progKeagamaan);
             return (
               <Reveal key={n.id || n.title} delay={i * 0.08}>
                 <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">

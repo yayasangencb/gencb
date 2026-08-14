@@ -27,6 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Countdown } from "@/components/site/countdown";
 import { Reveal } from "@/components/site/reveal";
 import { StatusBadge } from "@/components/site/status-badge";
+import { getDummyImage } from "@/data/gencb";
 import { getEvent, formatRupiah, type GencbEvent } from "@/data/events";
 import { cn } from "@/lib/utils";
 
@@ -91,7 +92,7 @@ function EventDetail() {
     <>
       <section className="relative overflow-hidden pb-16 pt-32">
         <img
-          src={e.image}
+          src={getDummyImage(e.image, e.category)}
           alt={e.title}
           width={1600}
           height={900}

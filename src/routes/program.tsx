@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/page-hero";
 import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
-import { programs as defaultPrograms, images } from "@/data/gencb";
+import { programs as defaultPrograms, images, getDummyImage } from "@/data/gencb";
 import { useCollection } from "@/lib/admin/store";
 import { seedPrograms, type ProgramRow } from "@/lib/admin/seed";
 
@@ -25,13 +25,6 @@ export const Route = createFileRoute("/program")({
   component: ProgramPage,
 });
 
-function resolveImg(src?: string, fallback?: string) {
-  if (!src) return fallback || images.progPendidikan;
-  if (src.startsWith("data:") || src.startsWith("http") || src.startsWith("/")) return src;
-  if (images[src as keyof typeof images]) return images[src as keyof typeof images];
-  return fallback || images.progPendidikan;
-}
-
 function ProgramPage() {
   const { items } = useCollection<ProgramRow>("programs", seedPrograms);
   const displayList = items.length ? items : defaultPrograms;
@@ -47,7 +40,7 @@ function ProgramPage() {
         <SectionHeading label="Kategori" title="Bidang gerakan GEN-CB" align="left" />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {displayList.map((p, i) => {
-            const imgSrc = resolveImg((p as { image?: string }).image, images.progPendidikan);
+            const imgSrc = getDummyImage((p as { image?: string }).image, p.category, images.progPendidikan);
             return (
               <Reveal key={p.id || (p as { slug?: string }).slug || p.title} delay={i * 0.06}>
                 <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">

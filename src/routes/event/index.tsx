@@ -30,11 +30,8 @@ export const Route = createFileRoute("/event/")({
   component: EventPage,
 });
 
-function resolveImg(src?: string, fallback?: string) {
-  if (!src) return fallback || images.heroImg;
-  if (src.startsWith("data:") || src.startsWith("http") || src.startsWith("/")) return src;
-  if (images[src as keyof typeof images]) return images[src as keyof typeof images];
-  return fallback || images.heroImg;
+function resolveImg(src?: string, category?: string, fallback?: string) {
+  return getDummyImage(src, category, fallback);
 }
 
 function EventPage() {
@@ -112,7 +109,7 @@ function EventPage() {
             const quota = Number(e.quota) || 1;
             const registered = Number(e.registered) || 0;
             const pct = Math.min(100, Math.round((registered / quota) * 100));
-            const imgSrc = resolveImg(e.image, images.heroImg);
+            const imgSrc = resolveImg(e.image, e.category, images.heroImg);
             const feeVal = Number(e.fee || 0);
 
             return (

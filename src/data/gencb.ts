@@ -9,6 +9,31 @@ import programJalan from "@/assets/program-jalan.jpg";
 
 export const images = { heroImg, progPendidikan, progKeagamaan, progSosial, progOlahraga, mtqBanner, tenisMeja, programJalan };
 
+export function getDummyImage(src?: string, category?: string, fallback?: string): string {
+  if (src) {
+    if (src.startsWith("data:") || src.startsWith("http") || src.startsWith("/")) return src;
+    if (images[src as keyof typeof images]) return images[src as keyof typeof images];
+    const s = src.toLowerCase();
+    if (s.includes("mtq")) return mtqBanner;
+    if (s.includes("tenis") || s.includes("meja")) return tenisMeja;
+    if (s.includes("jalan") || s.includes("sehat")) return programJalan;
+    if (s.includes("keagamaan") || s.includes("agama")) return progKeagamaan;
+    if (s.includes("pendidikan") || s.includes("belajar")) return progPendidikan;
+    if (s.includes("sosial") || s.includes("baksos")) return progSosial;
+    if (s.includes("olahraga") || s.includes("sport")) return progOlahraga;
+  }
+
+  if (category) {
+    const c = category.toLowerCase();
+    if (c.includes("keagamaan")) return progKeagamaan;
+    if (c.includes("pendidikan")) return progPendidikan;
+    if (c.includes("sosial")) return progSosial;
+    if (c.includes("olahraga")) return progOlahraga;
+  }
+
+  return fallback || heroImg;
+}
+
 export const ORG = {
   name: "Generasi Cerdas Beraksi",
   short: "GEN-CB",
