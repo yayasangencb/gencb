@@ -831,11 +831,25 @@ export type Database = {
     Enums: {
       app_role: "super_admin" | "admin" | "editor" | "panitia" | "peserta"
       donation_method: "transfer" | "qris"
-      event_status: "open" | "soon" | "ongoing" | "closed"
+      event_status:
+        | "open"
+        | "soon"
+        | "ongoing"
+        | "closed"
+        | "draft"
+        | "finished"
+        | "cancelled"
       media_type: "photo" | "video"
-      news_status: "draft" | "published"
+      news_status: "draft" | "published" | "archived"
       notif_channel: "email" | "whatsapp" | "push"
-      verification_status: "pending" | "verified" | "rejected"
+      verification_status:
+        | "pending"
+        | "verified"
+        | "rejected"
+        | "accepted"
+        | "waiting"
+        | "present"
+        | "absent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -965,11 +979,27 @@ export const Constants = {
     Enums: {
       app_role: ["super_admin", "admin", "editor", "panitia", "peserta"],
       donation_method: ["transfer", "qris"],
-      event_status: ["open", "soon", "ongoing", "closed"],
+      event_status: [
+        "open",
+        "soon",
+        "ongoing",
+        "closed",
+        "draft",
+        "finished",
+        "cancelled",
+      ],
       media_type: ["photo", "video"],
-      news_status: ["draft", "published"],
+      news_status: ["draft", "published", "archived"],
       notif_channel: ["email", "whatsapp", "push"],
-      verification_status: ["pending", "verified", "rejected"],
+      verification_status: [
+        "pending",
+        "verified",
+        "rejected",
+        "accepted",
+        "waiting",
+        "present",
+        "absent",
+      ],
     },
   },
 } as const
