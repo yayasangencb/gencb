@@ -26,6 +26,7 @@ import { Route as AdminEventRouteImport } from './routes/admin/event'
 import { Route as AdminGaleriRouteImport } from './routes/admin/galeri'
 import { Route as AdminLiveRouteImport } from './routes/admin/live'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminMediaRouteImport } from './routes/admin/media'
 import { Route as AdminNotifikasiRouteImport } from './routes/admin/notifikasi'
 import { Route as AdminPendaftarRouteImport } from './routes/admin/pendaftar'
 import { Route as AdminProgramRouteImport } from './routes/admin/program'
@@ -38,6 +39,7 @@ import { Route as DaftarSlugRouteImport } from './routes/daftar.$slug'
 import { Route as EventIndexRouteImport } from './routes/event/index'
 import { Route as EventSlugRouteImport } from './routes/event/$slug'
 import { Route as ApiPublicSitemapDotxmlRouteImport } from './routes/api/public/sitemap[.]xml'
+import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,6 +126,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminNotifikasiRoute = AdminNotifikasiRouteImport.update({
   id: '/notifikasi',
   path: '/notifikasi',
@@ -184,6 +191,11 @@ const ApiPublicSitemapDotxmlRoute = ApiPublicSitemapDotxmlRouteImport.update({
   path: '/api/public/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
+  id: '/api/public/media/$',
+  path: '/api/public/media/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -202,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/admin/galeri': typeof AdminGaleriRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/notifikasi': typeof AdminNotifikasiRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/program': typeof AdminProgramRoute
@@ -215,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/berita/': typeof BeritaIndexRoute
   '/event/': typeof EventIndexRoute
   '/api/public/sitemap.xml': typeof ApiPublicSitemapDotxmlRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -232,6 +246,7 @@ export interface FileRoutesByTo {
   '/admin/galeri': typeof AdminGaleriRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/notifikasi': typeof AdminNotifikasiRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/program': typeof AdminProgramRoute
@@ -245,6 +260,7 @@ export interface FileRoutesByTo {
   '/berita': typeof BeritaIndexRoute
   '/event': typeof EventIndexRoute
   '/api/public/sitemap.xml': typeof ApiPublicSitemapDotxmlRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -264,6 +280,7 @@ export interface FileRoutesById {
   '/admin/galeri': typeof AdminGaleriRoute
   '/admin/live': typeof AdminLiveRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/notifikasi': typeof AdminNotifikasiRoute
   '/admin/pendaftar': typeof AdminPendaftarRoute
   '/admin/program': typeof AdminProgramRoute
@@ -277,6 +294,7 @@ export interface FileRoutesById {
   '/berita/': typeof BeritaIndexRoute
   '/event/': typeof EventIndexRoute
   '/api/public/sitemap.xml': typeof ApiPublicSitemapDotxmlRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -297,6 +315,7 @@ export interface FileRouteTypes {
     | '/admin/galeri'
     | '/admin/live'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/notifikasi'
     | '/admin/pendaftar'
     | '/admin/program'
@@ -310,6 +329,7 @@ export interface FileRouteTypes {
     | '/berita/'
     | '/event/'
     | '/api/public/sitemap.xml'
+    | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -327,6 +347,7 @@ export interface FileRouteTypes {
     | '/admin/galeri'
     | '/admin/live'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/notifikasi'
     | '/admin/pendaftar'
     | '/admin/program'
@@ -340,6 +361,7 @@ export interface FileRouteTypes {
     | '/berita'
     | '/event'
     | '/api/public/sitemap.xml'
+    | '/api/public/media/$'
   id:
     | '__root__'
     | '/'
@@ -358,6 +380,7 @@ export interface FileRouteTypes {
     | '/admin/galeri'
     | '/admin/live'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/notifikasi'
     | '/admin/pendaftar'
     | '/admin/program'
@@ -371,6 +394,7 @@ export interface FileRouteTypes {
     | '/berita/'
     | '/event/'
     | '/api/public/sitemap.xml'
+    | '/api/public/media/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -388,6 +412,7 @@ export interface RootRouteChildren {
   BeritaIndexRoute: typeof BeritaIndexRoute
   EventIndexRoute: typeof EventIndexRoute
   ApiPublicSitemapDotxmlRoute: typeof ApiPublicSitemapDotxmlRoute
+  ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -511,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/notifikasi': {
       id: '/admin/notifikasi'
       path: '/notifikasi'
@@ -595,6 +627,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/media/$': {
+      id: '/api/public/media/$'
+      path: '/api/public/media/$'
+      fullPath: '/api/public/media/$'
+      preLoaderRoute: typeof ApiPublicMediaSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -607,6 +646,7 @@ interface AdminRouteRouteChildren {
   AdminGaleriRoute: typeof AdminGaleriRoute
   AdminLiveRoute: typeof AdminLiveRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMediaRoute: typeof AdminMediaRoute
   AdminNotifikasiRoute: typeof AdminNotifikasiRoute
   AdminPendaftarRoute: typeof AdminPendaftarRoute
   AdminProgramRoute: typeof AdminProgramRoute
@@ -625,6 +665,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminGaleriRoute: AdminGaleriRoute,
   AdminLiveRoute: AdminLiveRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMediaRoute: AdminMediaRoute,
   AdminNotifikasiRoute: AdminNotifikasiRoute,
   AdminPendaftarRoute: AdminPendaftarRoute,
   AdminProgramRoute: AdminProgramRoute,
@@ -653,6 +694,7 @@ const rootRouteChildren: RootRouteChildren = {
   BeritaIndexRoute: BeritaIndexRoute,
   EventIndexRoute: EventIndexRoute,
   ApiPublicSitemapDotxmlRoute: ApiPublicSitemapDotxmlRoute,
+  ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

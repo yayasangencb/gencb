@@ -31,7 +31,8 @@ export type AdminModule =
   | "donasi"
   | "user"
   | "notifikasi"
-  | "live";
+  | "live"
+  | "media";
 
 const ALL: AdminModule[] = [
   "overview",
@@ -48,12 +49,13 @@ const ALL: AdminModule[] = [
   "user",
   "notifikasi",
   "live",
+  "media",
 ];
 
 export const rolePermissions: Record<AdminRole, AdminModule[]> = {
   SUPER_ADMIN: ALL,
   ADMIN: ALL.filter((m) => m !== "user"),
-  EDITOR: ["overview", "berita", "galeri"],
+  EDITOR: ["overview", "berita", "galeri", "media"],
   PANITIA: ["overview", "event", "pendaftar", "absensi", "sertifikat", "live"],
 };
 
