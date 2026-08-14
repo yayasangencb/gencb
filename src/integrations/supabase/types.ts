@@ -56,6 +56,39 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          entity: string | null
+          entity_id: string | null
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          metadata?: Json
+        }
+        Relationships: []
+      }
       certificate_templates: {
         Row: {
           created_at: string
@@ -152,6 +185,9 @@ export type Database = {
           message: string
           name: string
           phone: string | null
+          status: string
+          subject: string | null
+          whatsapp: string | null
         }
         Insert: {
           created_at?: string
@@ -161,6 +197,9 @@ export type Database = {
           message: string
           name: string
           phone?: string | null
+          status?: string
+          subject?: string | null
+          whatsapp?: string | null
         }
         Update: {
           created_at?: string
@@ -170,6 +209,9 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+          status?: string
+          subject?: string | null
+          whatsapp?: string | null
         }
         Relationships: []
       }
@@ -308,78 +350,188 @@ export type Database = {
           },
         ]
       }
+      event_form_fields: {
+        Row: {
+          created_at: string
+          event_id: string
+          field_key: string
+          field_type: string
+          help_text: string | null
+          id: string
+          is_active: boolean
+          label: string
+          options: Json
+          placeholder: string | null
+          required: boolean
+          sort_order: number
+          updated_at: string
+          validation: Json
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          field_key: string
+          field_type?: string
+          help_text?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          options?: Json
+          placeholder?: string | null
+          required?: boolean
+          sort_order?: number
+          updated_at?: string
+          validation?: Json
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          field_key?: string
+          field_type?: string
+          help_text?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          options?: Json
+          placeholder?: string | null
+          required?: boolean
+          sort_order?: number
+          updated_at?: string
+          validation?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_form_fields_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
+          archived_at: string | null
+          banner_url: string | null
           category: string
+          contact_person: string | null
+          contact_phone: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
           description: string | null
+          documents: Json
           event_date_end: string | null
           event_date_start: string | null
+          faq: Json
           guidebook_url: string | null
           id: string
           location_lat: number | null
           location_lng: number | null
           location_text: string | null
+          map_url: string | null
           poster_url: string | null
           price: number | null
+          prizes_text: string | null
           proposal_doc_url: string | null
           quota: number
           registered_count: number
           registration_end: string | null
+          registration_open_override: boolean | null
           registration_start: string | null
+          requirements_text: string | null
+          rules_text: string | null
           rundown: Json
           slug: string
           status: Database["public"]["Enums"]["event_status"]
+          status_override: boolean
+          theme: string | null
           title: string
+          unique_by_email: boolean
+          unique_by_phone: boolean
+          updated_at: string
         }
         Insert: {
+          archived_at?: string | null
+          banner_url?: string | null
           category?: string
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           description?: string | null
+          documents?: Json
           event_date_end?: string | null
           event_date_start?: string | null
+          faq?: Json
           guidebook_url?: string | null
           id?: string
           location_lat?: number | null
           location_lng?: number | null
           location_text?: string | null
+          map_url?: string | null
           poster_url?: string | null
           price?: number | null
+          prizes_text?: string | null
           proposal_doc_url?: string | null
           quota?: number
           registered_count?: number
           registration_end?: string | null
+          registration_open_override?: boolean | null
           registration_start?: string | null
+          requirements_text?: string | null
+          rules_text?: string | null
           rundown?: Json
           slug: string
           status?: Database["public"]["Enums"]["event_status"]
+          status_override?: boolean
+          theme?: string | null
           title: string
+          unique_by_email?: boolean
+          unique_by_phone?: boolean
+          updated_at?: string
         }
         Update: {
+          archived_at?: string | null
+          banner_url?: string | null
           category?: string
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           description?: string | null
+          documents?: Json
           event_date_end?: string | null
           event_date_start?: string | null
+          faq?: Json
           guidebook_url?: string | null
           id?: string
           location_lat?: number | null
           location_lng?: number | null
           location_text?: string | null
+          map_url?: string | null
           poster_url?: string | null
           price?: number | null
+          prizes_text?: string | null
           proposal_doc_url?: string | null
           quota?: number
           registered_count?: number
           registration_end?: string | null
+          registration_open_override?: boolean | null
           registration_start?: string | null
+          requirements_text?: string | null
+          rules_text?: string | null
           rundown?: Json
           slug?: string
           status?: Database["public"]["Enums"]["event_status"]
+          status_override?: boolean
+          theme?: string | null
           title?: string
+          unique_by_email?: boolean
+          unique_by_phone?: boolean
+          updated_at?: string
         }
         Relationships: []
       }
@@ -453,13 +605,61 @@ export type Database = {
           },
         ]
       }
+      media_assets: {
+        Row: {
+          bucket: string
+          created_at: string
+          file_name: string
+          folder: string
+          height: number | null
+          id: string
+          mime_type: string | null
+          path: string
+          size_bytes: number | null
+          uploaded_by: string | null
+          url: string
+          width: number | null
+        }
+        Insert: {
+          bucket: string
+          created_at?: string
+          file_name: string
+          folder?: string
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          path: string
+          size_bytes?: number | null
+          uploaded_by?: string | null
+          url: string
+          width?: number | null
+        }
+        Update: {
+          bucket?: string
+          created_at?: string
+          file_name?: string
+          folder?: string
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          path?: string
+          size_bytes?: number | null
+          uploaded_by?: string | null
+          url?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           author_id: string | null
+          author_name: string | null
           category: string
           content: string | null
           cover_image: string | null
           created_at: string
+          deleted_at: string | null
+          excerpt: string | null
           id: string
           published_at: string | null
           seo_description: string | null
@@ -468,14 +668,18 @@ export type Database = {
           status: Database["public"]["Enums"]["news_status"]
           tags: string[]
           title: string
+          updated_at: string
           video_url: string | null
         }
         Insert: {
           author_id?: string | null
+          author_name?: string | null
           category?: string
           content?: string | null
           cover_image?: string | null
           created_at?: string
+          deleted_at?: string | null
+          excerpt?: string | null
           id?: string
           published_at?: string | null
           seo_description?: string | null
@@ -484,14 +688,18 @@ export type Database = {
           status?: Database["public"]["Enums"]["news_status"]
           tags?: string[]
           title: string
+          updated_at?: string
           video_url?: string | null
         }
         Update: {
           author_id?: string | null
+          author_name?: string | null
           category?: string
           content?: string | null
           cover_image?: string | null
           created_at?: string
+          deleted_at?: string | null
+          excerpt?: string | null
           id?: string
           published_at?: string | null
           seo_description?: string | null
@@ -500,6 +708,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["news_status"]
           tags?: string[]
           title?: string
+          updated_at?: string
           video_url?: string | null
         }
         Relationships: []
@@ -572,6 +781,45 @@ export type Database = {
         }
         Relationships: []
       }
+      organization_members: {
+        Row: {
+          bio: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          period: string | null
+          photo_url: string | null
+          position: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          period?: string | null
+          photo_url?: string | null
+          position: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          period?: string | null
+          photo_url?: string | null
+          position?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       partners: {
         Row: {
           category: string | null
@@ -641,12 +889,15 @@ export type Database = {
       registrations: {
         Row: {
           address: string | null
+          admin_note: string | null
           agreement_checked: boolean
           birth_date: string | null
           birth_place: string | null
           created_at: string
+          deleted_at: string | null
           email: string | null
           event_id: string
+          form_data: Json
           full_name: string
           gender: string | null
           id: string
@@ -661,17 +912,21 @@ export type Database = {
           qr_code_value: string | null
           rw: string | null
           school: string | null
+          updated_at: string
           user_id: string | null
           verification_status: Database["public"]["Enums"]["verification_status"]
         }
         Insert: {
           address?: string | null
+          admin_note?: string | null
           agreement_checked?: boolean
           birth_date?: string | null
           birth_place?: string | null
           created_at?: string
+          deleted_at?: string | null
           email?: string | null
           event_id: string
+          form_data?: Json
           full_name: string
           gender?: string | null
           id?: string
@@ -686,17 +941,21 @@ export type Database = {
           qr_code_value?: string | null
           rw?: string | null
           school?: string | null
+          updated_at?: string
           user_id?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
         }
         Update: {
           address?: string | null
+          admin_note?: string | null
           agreement_checked?: boolean
           birth_date?: string | null
           birth_place?: string | null
           created_at?: string
+          deleted_at?: string | null
           email?: string | null
           event_id?: string
+          form_data?: Json
           full_name?: string
           gender?: string | null
           id?: string
@@ -711,6 +970,7 @@ export type Database = {
           qr_code_value?: string | null
           rw?: string | null
           school?: string | null
+          updated_at?: string
           user_id?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
         }
@@ -730,6 +990,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
       }
       testimonials: {
         Row: {
