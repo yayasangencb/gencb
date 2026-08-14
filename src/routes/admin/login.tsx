@@ -35,15 +35,15 @@ function AdminLoginPage() {
     try {
       const { session, error: loginError } = await loginAdmin(email, password);
       if (!session) {
-        setError(loginError ?? "Login gagal.");
-        toast.error("Login gagal");
+        setError(loginError ?? "Email atau kata sandi tidak valid.");
+        toast.error("Gagal masuk");
         return;
       }
       toast.success(`Selamat datang, ${session.name}`);
       navigate({ to: "/admin", replace: true });
     } catch {
-      setError("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
-      toast.error("Gagal terhubung ke server");
+      setError("Terjadi kesalahan saat masuk. Periksa kembali email & kata sandi.");
+      toast.error("Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ function AdminLoginPage() {
           <h1 className="max-w-md font-display text-3xl font-bold">Panel Pengelolaan Yayasan</h1>
           <p className="mt-3 max-w-md text-sm opacity-85">
             Kelola berita, event, pendaftar, absensi, sertifikat, dan donasi dalam satu tempat dengan
-            hak akses sesuai peran.
+            hak akses resmi pengelola.
           </p>
         </div>
         <p className="text-xs opacity-70">© 2026 Yayasan Generasi Cerdas Beraksi</p>
@@ -77,24 +77,24 @@ function AdminLoginPage() {
           </div>
           <h2 className="font-display text-2xl font-bold">Masuk sebagai pengelola</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Gunakan akun admin yang diberikan pengurus yayasan.
+            Masukkan email dan kata sandi akun admin pengelola Anda.
           </p>
 
           <form onSubmit={submit} className="mt-6 space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email Admin</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@email.com"
+                placeholder="nama@gencb.or.id"
                 required
                 autoComplete="email"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password">Kata sandi</Label>
+              <Label htmlFor="password">Kata Sandi</Label>
               <Input
                 id="password"
                 type="password"
@@ -110,82 +110,8 @@ function AdminLoginPage() {
               {loading ? "Memproses..." : "Masuk ke Dashboard"}
             </Button>
           </form>
-
-          <div className="mt-6 pt-4 border-t border-border space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground">Uji Akses Peran Admin:</p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="text-xs rounded-lg"
-                onClick={async () => {
-                  setEmail("superadmin@gencb.or.id");
-                  setPassword("admin123");
-                  const { session } = await loginAdmin("superadmin@gencb.or.id", "admin123");
-                  if (session) {
-                    toast.success(`Masuk sebagai ${session.name}`);
-                    navigate({ to: "/admin", replace: true });
-                  }
-                }}
-              >
-                Super Admin
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="text-xs rounded-lg"
-                onClick={async () => {
-                  setEmail("admin@gencb.or.id");
-                  setPassword("admin123");
-                  const { session } = await loginAdmin("admin@gencb.or.id", "admin123");
-                  if (session) {
-                    toast.success(`Masuk sebagai ${session.name}`);
-                    navigate({ to: "/admin", replace: true });
-                  }
-                }}
-              >
-                Admin
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="text-xs rounded-lg"
-                onClick={async () => {
-                  setEmail("editor@gencb.or.id");
-                  setPassword("admin123");
-                  const { session } = await loginAdmin("editor@gencb.or.id", "admin123");
-                  if (session) {
-                    toast.success(`Masuk sebagai ${session.name}`);
-                    navigate({ to: "/admin", replace: true });
-                  }
-                }}
-              >
-                Editor
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="text-xs rounded-lg"
-                onClick={async () => {
-                  setEmail("panitia@gencb.or.id");
-                  setPassword("admin123");
-                  const { session } = await loginAdmin("panitia@gencb.or.id", "admin123");
-                  if (session) {
-                    toast.success(`Masuk sebagai ${session.name}`);
-                    navigate({ to: "/admin", replace: true });
-                  }
-                }}
-              >
-                Panitia
-              </Button>
-            </div>
-          </div>
-          <p className="mt-8 text-xs text-muted-foreground">
-            Akses panel hanya diberikan oleh pengurus Yayasan Generasi Cerdas Beraksi.
+          <p className="mt-8 text-xs text-muted-foreground text-center">
+            Akses panel resmi Yayasan Generasi Cerdas Beraksi.
           </p>
         </div>
       </div>
