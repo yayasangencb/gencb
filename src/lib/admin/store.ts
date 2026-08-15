@@ -74,9 +74,6 @@ export function useCollection<T extends Entity>(key: string, seed: T[]) {
       const current = read<T>(key, seed);
       const updated = current.map((i) => (i.id === id ? { ...i, ...patch } : i));
       write(key, updated);
-      const target = updated.find((i) => i.id === id);
-      if (target) {
-      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [key],
@@ -85,13 +82,10 @@ export function useCollection<T extends Entity>(key: string, seed: T[]) {
   const remove = useCallback(
     (id: string) => {
       const current = read<T>(key, seed);
-      const found = current.find((i) => i.id === id);
       write(
         key,
         current.filter((i) => i.id !== id),
       );
-      if (found) {
-      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [key],
@@ -102,7 +96,7 @@ export function useCollection<T extends Entity>(key: string, seed: T[]) {
       const all = read<T>(key, seed);
       const found = all.find((i) => i.id === id);
       if (!found) return;
-      const dup = { ...found, id: newId(), title: `${(found as Record<string, unknown>).title ?? ""} (Salinan)` } as T;
+      const dup = { ...found, id: newId(), title: `${(found as Record<string, unknown>)["title"] ?? ""} (Salinan)` } as T;
       write(key, [dup, ...all]);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
