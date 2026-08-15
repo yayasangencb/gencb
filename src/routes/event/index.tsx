@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/site/page-hero";
 import { Reveal } from "@/components/site/reveal";
 import { StatusBadge } from "@/components/site/status-badge";
-import { events as defaultEvents, eventCategories, eventStatuses, formatRupiah } from "@/data/events";
+import { eventCategories, eventStatuses, formatRupiah } from "@/data/events";
 import { images, getDummyImage } from "@/data/gencb";
-import { useCollection } from "@/lib/admin/store";
-import { seedEvents, type EventRow } from "@/lib/admin/seed";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPublicEvents, statusToBadge } from "@/lib/cloud/home";
+import { formatDateId } from "@/lib/cloud/public-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/event/")({
@@ -38,15 +39,17 @@ function EventPage() {
   const [category, setCategory] = useState<string>("Semua");
   const [status, setStatus] = useState<string>("SEMUA");
 
-  const eventsStore = useCollection<EventRow>("events", seedEvents);
-  const liveEvents = eventsStore.items.length ? eventsStore.items : (defaultEvents as unknown as EventRow[]);
+  const { data: liveEvents = [] } = useQuery({
+    queryKey: ["public-events"],
+    queryFn: fetchPublicEvents,
+  });
 
   const filtered = useMemo(
     () =>
       liveEvents.filter(
         (e) =>
           (category === "Semua" || e.category === category) &&
-          (status === "SEMUA" || e.status === status),
+          (status === "SEMUA" || statusToBadge(e.status) === status),
       ),
     [liveEvents, category, status],
   );
@@ -107,13 +110,13 @@ function EventPage() {
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((e, i) => {
             const quota = Number(e.quota) || 1;
-            const registered = Number(e.registered) || 0;
+            const registered = Number(e.registered_count) || 0;
             const pct = Math.min(100, Math.round((registered / quota) * 100));
-            const imgSrc = resolveImg(e.image, e.category, images.heroImg);
-            const feeVal = Number(e.fee || 0);
+            const imgSrc = resolveImg(e.poster_url ?? undefined, e.category, images.heroImg);
+            const feeVal = Number(e.price || 0);
 
             return (
-              <Reveal key={e.id || e.slug} delay={i * 0.05}>
+              <Reveal key={e.id} delay={i * 0.05}>
                 <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
                   <div className="relative h-48 overflow-hidden">
                     <img
@@ -125,7 +128,7 @@ function EventPage() {
                       className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute left-4 top-4">
-                      <StatusBadge status={e.status as "OPEN" | "SOON" | "ONGOING" | "CLOSED"} />
+                      <StatusBadge status={statusToBadge(e.status)} />
                     </div>
                     <span className="absolute right-4 top-4 rounded-full bg-black/60 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur">
                       {feeVal > 0 ? formatRupiah(feeVal) : "Gratis"}
@@ -141,11 +144,11 @@ function EventPage() {
                     <div className="mt-4 space-y-2 text-xs text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <CalendarDays className="size-4 shrink-0 text-primary" />
-                        <span>{e.date}</span>
+                        <span>{formatDateId(e.event_date_start)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="size-4 shrink-0 text-primary" />
-                        <span className="truncate">{e.location}</span>
+                        <span className="truncate">{e.location_text ?? "-"}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="size-4 shrink-0 text-primary" />
@@ -164,13 +167,13 @@ function EventPage() {
 
                     <div className="mt-6 flex items-center gap-2">
                       <Button asChild variant="outline" size="sm" className="flex-1 rounded-full">
-                        <Link to="/event/$slug" params={{ slug: e.slug || "mtq-desa-sasak-panjang" }}>
+                        <Link to="/event/$slug" params={{ slug: e.slug }}>
                           Detail
                         </Link>
                       </Button>
-                      {e.status === "OPEN" ? (
+                      {statusToBadge(e.status) === "OPEN" ? (
                         <Button asChild variant="accent" size="sm" className="flex-1 rounded-full">
-                          <Link to="/daftar/$slug" params={{ slug: e.slug || "mtq-desa-sasak-panjang" }}>
+                          <Link to="/daftar/$slug" params={{ slug: e.slug }}>
                             Daftar
                           </Link>
                         </Button>

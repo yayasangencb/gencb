@@ -79,3 +79,46 @@ export async function fetchHomeContent() {
     stats,
   };
 }
+export type PublicEvent = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  status: string;
+  poster_url: string | null;
+  location_text: string | null;
+  event_date_start: string | null;
+  quota: number;
+  registered_count: number;
+  price: number | null;
+};
+
+export async function fetchPublicEvents(): Promise<PublicEvent[]> {
+  const { data } = await supabase
+    .from("events")
+    .select(
+      "id, slug, title, category, status, poster_url, location_text, event_date_start, quota, registered_count, price",
+    )
+    .is("deleted_at", null)
+    .not("status", "in", "(draft,cancelled)")
+    .order("event_date_start", { ascending: true });
+  return data ?? [];
+}
+
+export type PublicProgram = {
+  id: string;
+  title: string;
+  category: string;
+  description: string | null;
+  target_text: string | null;
+  cover_image: string | null;
+};
+
+export async function fetchPublicPrograms(): Promise<PublicProgram[]> {
+  const { data } = await supabase
+    .from("programs")
+    .select("id, title, category, description, target_text, cover_image")
+    .eq("is_published", true)
+    .order("created_at", { ascending: true });
+  return data ?? [];
+}
