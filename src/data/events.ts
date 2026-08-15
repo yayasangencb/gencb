@@ -458,38 +458,7 @@ export const events: GencbEvent[] = [
 ];
 
 export function getEvent(slug: string) {
-  let list = events;
-  if (typeof window !== "undefined") {
-    try {
-      const raw = window.localStorage.getItem("gencb-admin:events");
-      if (raw) {
-        const stored = JSON.parse(raw) as Record<string, unknown>[];
-        if (stored && stored.length) {
-          const match = stored.find((item) => item.slug === slug || item.id === slug);
-          if (match) {
-            const base = events.find((e) => e.slug === slug) || events[0];
-            return {
-              ...base,
-              slug: String(match.slug || base.slug),
-              title: String(match.title || base.title),
-              category: String(match.category || base.category),
-              status: (match.status as EventStatus) || base.status,
-              date: String(match.date || base.date),
-              location: String(match.location || base.location),
-              quota: Number(match.quota) || base.quota,
-              registered: Number(match.registered) || base.registered,
-              fee: Number(match.fee) || base.fee,
-              image: String(match.image || base.image),
-              description: match.description ? [String(match.description)] : base.description,
-            };
-          }
-        }
-      }
-    } catch {
-      // ignore
-    }
-  }
-  return list.find((e) => e.slug === slug);
+  return events.find((e) => e.slug === slug);
 }
 
 export function isRegistrationOpen(status: EventStatus) {
