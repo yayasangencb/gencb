@@ -65,7 +65,7 @@ function ProgramPage() {
                       {p.description}
                     </p>
                     <p className="mt-4 text-xs font-medium uppercase tracking-widest text-accent">
-                      Target: {p.target}
+                      Target: {p.target_text ?? "Masyarakat umum"}
                     </p>
                   </div>
                 </article>

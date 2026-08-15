@@ -96,7 +96,7 @@ export async function loginAdmin(emailRaw: string, passwordRaw: string) {
 
       const session: AdminSession = {
         id: data.user.id,
-        name: data.user.user_metadata?.full_name || email.split("@")[0] || "Pengelola",
+        name: (data.user.user_metadata?.["full_name"] as string | undefined) || email.split("@")[0] || "Pengelola",
         email: data.user.email ?? email,
         role,
       };
@@ -118,7 +118,7 @@ export async function loginAdmin(emailRaw: string, passwordRaw: string) {
 
   const session: AdminSession = {
     id: `usr-${Date.now().toString(36)}`,
-    name: email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Pengelola Yayasan",
+    name: (email.split("@")[0] ?? "").replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Pengelola Yayasan",
     email,
     role,
   };
