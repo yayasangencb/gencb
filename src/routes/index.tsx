@@ -6,9 +6,10 @@ import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { StatCounter } from "@/components/site/stat-counter";
 import { StatusBadge } from "@/components/site/status-badge";
-import { events as defaultEvents, gallery as defaultGallery, images, getDummyImage, news as defaultNews, ORG, partners as defaultPartners, programs as defaultPrograms, stats, testimonials } from "@/data/gencb";
-import { useCollection } from "@/lib/admin/store";
-import { seedEvents, seedGallery, seedNews, seedPrograms, seedSponsors, seedDonationPrograms, type EventRow, type GalleryRow, type NewsRow, type ProgramRow, type SponsorRow, type DonationProgramRow } from "@/lib/admin/seed";
+import { useQuery } from "@tanstack/react-query";
+import { images, getDummyImage, ORG } from "@/data/gencb";
+import { fetchHomeContent, statusToBadge } from "@/lib/cloud/home";
+import { formatDateId } from "@/lib/cloud/public-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,21 +35,16 @@ function resolveImg(src?: string, category?: string, fallback?: string) {
 }
 
 function Index() {
-  const programsStore = useCollection<ProgramRow>("programs", seedPrograms);
-  const eventsStore = useCollection<EventRow>("events", seedEvents);
-  const newsStore = useCollection<NewsRow>("news", seedNews);
-  const galleryStore = useCollection<GalleryRow>("gallery", seedGallery);
-  const sponsorsStore = useCollection<SponsorRow>("sponsor", seedSponsors);
-  const donationStore = useCollection<DonationProgramRow>("donation-programs", seedDonationPrograms);
+  const { data } = useQuery({ queryKey: ["home-content"], queryFn: fetchHomeContent });
 
-  const activePrograms = programsStore.items.filter((p) => p.status === "AKTIF");
-  const publishedNews = newsStore.items.filter((n) => n.status === "PUBLISH");
-  const liveEvents = eventsStore.items;
-  const activeDonation = donationStore.items.find((d) => d.status === "AKTIF") || donationStore.items[0];
-
-  const partnerList = sponsorsStore.items.length
-    ? sponsorsStore.items.map((s) => s.name)
-    : defaultPartners;
+  const activePrograms = data?.programs ?? [];
+  const publishedNews = data?.news ?? [];
+  const liveEvents = data?.events ?? [];
+  const galleryItems = data?.gallery ?? [];
+  const testimonialList = data?.testimonials ?? [];
+  const activeDonation = data?.donationPrograms?.[0];
+  const partnerList = data?.partners ?? [];
+  const stats = data?.stats ?? [];
 
   return (
     <>
