@@ -76,50 +76,35 @@ export async function loginAdmin(emailRaw: string, passwordRaw: string) {
     return { session: null, error: "Email dan kata sandi wajib diisi." };
   }
 
-  // 1. Try real Supabase Auth
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (data?.user && !error) {
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", data.user.id);
-
-      const dbRoles = (roles ?? []).map((r) => r.role as string);
-      let role: AdminRole = "ADMIN";
-      if (dbRoles.includes("super_admin") || email.includes("super")) role = "SUPER_ADMIN";
-      else if (dbRoles.includes("editor") || email.includes("editor")) role = "EDITOR";
-      else if (dbRoles.includes("panitia") || email.includes("panitia")) role = "PANITIA";
-
-      const session: AdminSession = {
-        id: data.user.id,
-        name: (data.user.user_metadata?.["full_name"] as string | undefined) || email.split("@")[0] || "Pengelola",
-        email: data.user.email ?? email,
-        role,
-      };
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
-      }
-      return { session, error: null };
-    }
-  } catch {
-    // fallback
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data?.user) {
+    return { session: null, error: "Email atau kata sandi salah." };
   }
 
-  // 2. Production Admin Account authentication fallback
-  let role: AdminRole = "ADMIN";
-  if (email.includes("super")) role = "SUPER_ADMIN";
-  else if (email.includes("editor")) role = "EDITOR";
-  else if (email.includes("panitia")) role = "PANITIA";
+  const { data: roles } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", data.user.id);
+  const dbRoles = (roles ?? []).map((r) => r.role as string);
+
+  let role: AdminRole | null = null;
+  if (dbRoles.includes("super_admin")) role = "SUPER_ADMIN";
+  else if (dbRoles.includes("admin")) role = "ADMIN";
+  else if (dbRoles.includes("editor")) role = "EDITOR";
+  else if (dbRoles.includes("panitia")) role = "PANITIA";
+
+  if (!role) {
+    await supabase.auth.signOut();
+    return { session: null, error: "Akun ini tidak memiliki akses ke panel pengelola." };
+  }
 
   const session: AdminSession = {
-    id: `usr-${Date.now().toString(36)}`,
-    name: (email.split("@")[0] ?? "").replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Pengelola Yayasan",
-    email,
+    id: data.user.id,
+    name:
+      (data.user.user_metadata?.["full_name"] as string | undefined) ||
+      email.split("@")[0] ||
+      "Pengelola",
+    email: data.user.email ?? email,
     role,
   };
 
