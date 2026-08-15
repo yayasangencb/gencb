@@ -140,10 +140,10 @@ function Index() {
           description="Program berkelanjutan yang dirancang bersama masyarakat, dari pendidikan hingga teknologi."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {(activePrograms.length ? activePrograms : defaultPrograms).map((p, i) => {
-            const imgSrc = resolveImg((p as { image?: string }).image, p.category, images.progPendidikan);
+          {activePrograms.map((p, i) => {
+            const imgSrc = resolveImg(p.cover_image ?? undefined, p.category, images.progPendidikan);
             return (
-              <Reveal key={p.id || p.title} delay={i * 0.06}>
+              <Reveal key={p.id} delay={i * 0.06}>
                 <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
                   <div className="relative h-44 overflow-hidden">
                     <img
@@ -162,7 +162,7 @@ function Index() {
                     <h3 className="font-display text-lg font-semibold">{p.title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
                     <p className="mt-4 text-xs font-medium uppercase tracking-widest text-accent">
-                      Target: {p.target}
+                      Target: {p.target_text ?? "Masyarakat umum"}
                     </p>
                   </div>
                 </article>
@@ -181,9 +181,9 @@ function Index() {
           />
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {liveEvents.slice(0, 4).map((e, i) => {
-              const eventImg = resolveImg(e.image, e.category, images.heroImg);
+              const eventImg = resolveImg(e.poster_url ?? undefined, e.category, images.heroImg);
               return (
-                <Reveal key={e.id || e.slug} delay={i * 0.06}>
+                <Reveal key={e.id} delay={i * 0.06}>
                   <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
                     <div className="relative h-40 overflow-hidden">
                       <img
@@ -195,18 +195,18 @@ function Index() {
                         className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute left-4 top-4">
-                        <StatusBadge status={e.status as "OPEN" | "SOON" | "ONGOING" | "CLOSED"} />
+                        <StatusBadge status={statusToBadge(e.status)} />
                       </div>
                     </div>
                     <div className="flex flex-1 flex-col p-5">
                       <h3 className="font-display text-base font-semibold">{e.title}</h3>
-                      <p className="mt-2 text-xs text-muted-foreground">{e.date}</p>
-                      <p className="text-xs text-muted-foreground">{e.location}</p>
+                      <p className="mt-2 text-xs text-muted-foreground">{formatDateId(e.event_date_start)}</p>
+                      <p className="text-xs text-muted-foreground">{e.location_text ?? "-"}</p>
                       <p className="mt-3 text-xs font-medium text-accent">
-                        {e.registered}/{e.quota} peserta
+                        {e.registered_count}/{e.quota} peserta
                       </p>
                       <Button asChild variant="hero" size="sm" className="mt-5 w-full">
-                        <Link to="/event/$slug" params={{ slug: e.slug || "mtq-desa-sasak-panjang" }}>
+                        <Link to="/event/$slug" params={{ slug: e.slug }}>
                           Detail
                         </Link>
                       </Button>
@@ -226,10 +226,10 @@ function Index() {
           description="Dokumentasi dan pengumuman terbaru dari kegiatan GEN-CB."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {(publishedNews.length ? publishedNews : defaultNews).map((n, i) => {
-            const newsImg = resolveImg((n as { image?: string }).image, n.category, images.progKeagamaan);
+          {publishedNews.map((n, i) => {
+            const newsImg = resolveImg(n.cover_image ?? undefined, n.category, images.progKeagamaan);
             return (
-              <Reveal key={n.id || n.title} delay={i * 0.08}>
+              <Reveal key={n.id} delay={i * 0.08}>
                 <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
                   <img
                     src={newsImg}
@@ -242,10 +242,10 @@ function Index() {
                   <div className="p-6">
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <span className="font-semibold text-accent">{n.category}</span>
-                      <span>{n.date}</span>
+                      <span>{formatDateId(n.published_at)}</span>
                     </div>
                     <h3 className="mt-3 font-display text-lg font-semibold">{n.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{n.content || (n as { excerpt?: string }).excerpt}</p>
+                    <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{n.excerpt}</p>
                   </div>
                 </article>
               </Reveal>
@@ -258,21 +258,21 @@ function Index() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading label="Dokumentasi" title="Galeri kegiatan terbaru" />
           <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3">
-            {galleryStore.items.slice(0, 6).map((g, i) => {
-              const galImg = resolveImg(g.url, images.heroImg);
+            {galleryItems.map((g, i) => {
+              const galImg = resolveImg(g.url, undefined, images.heroImg);
               return (
-                <Reveal key={`${g.caption}-${i}`} delay={i * 0.05}>
+                <Reveal key={g.id} delay={i * 0.05}>
                   <div className="group relative overflow-hidden rounded-3xl shadow-soft">
                     <img
                       src={galImg}
-                      alt={g.caption}
+                      alt={g.caption ?? ""}
                       loading="lazy"
                       width={1200}
                       height={800}
                       className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-xs font-medium text-white">
-                      {g.caption}
+                      {g.caption ?? ""}
                     </div>
                   </div>
                 </Reveal>
@@ -305,12 +305,12 @@ function Index() {
                     <div
                       className="h-full rounded-full bg-gradient-accent"
                       style={{
-                        width: `${Math.min(Math.round(((Number(activeDonation.collected) || 0) / (Number(activeDonation.target) || 1)) * 100), 100)}%`,
+                        width: `${Math.min(Math.round(((Number(activeDonation.collected_amount) || 0) / (Number(activeDonation.target_amount) || 1)) * 100), 100)}%`,
                       }}
                     />
                   </div>
                   <p className="mt-3 text-xs opacity-85">
-                    Rp {Number(activeDonation.collected || 0).toLocaleString("id-ID")} dari target Rp {Number(activeDonation.target || 0).toLocaleString("id-ID")}
+                    Rp {Number(activeDonation.collected_amount || 0).toLocaleString("id-ID")} dari target Rp {Number(activeDonation.target_amount || 0).toLocaleString("id-ID")}
                   </p>
                 </div>
               )}
@@ -344,16 +344,16 @@ function Index() {
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
         <SectionHeading label="Testimoni" title="Kata mereka tentang GEN-CB" />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <Reveal key={t.name} delay={i * 0.08}>
+          {testimonialList.map((t, i) => (
+            <Reveal key={t.id} delay={i * 0.08}>
               <figure className="h-full rounded-3xl border border-border/60 bg-card p-7 shadow-soft">
                 <Quote className="size-7 text-accent" />
                 <blockquote className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                  “{t.quote}”
+                  “{t.message}”
                 </blockquote>
                 <figcaption className="mt-6">
                   <p className="font-display text-sm font-semibold">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.role}</p>
+                  <p className="text-xs text-muted-foreground">{t.role_or_affiliation ?? ""}</p>
                 </figcaption>
               </figure>
             </Reveal>
