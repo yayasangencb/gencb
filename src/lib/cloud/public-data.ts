@@ -36,24 +36,21 @@ function getLocalStore<T>(key: string): T[] | null {
 }
 
 export async function fetchNewsList() {
-  // Query Supabase Database FIRST so edits from Admin A on machine A are immediately fetched by machine B
   try {
     const { data, error } = await supabase
       .from("news")
       .select(
         "id, slug, title, category, content, cover_image, published_at, created_at, tags, video_url, seo_title, seo_description",
       )
-      .eq("status", "published")
-      .order("published_at", { ascending: false, nullsFirst: false });
+      .order("created_at", { ascending: false });
     if (!error && data && data.length) return data as NewsRow[];
   } catch {
     // fallback
   }
 
-  // Fallback to local admin store if Supabase database is offline or empty
   const localNews = getLocalStore<any>("news");
   if (localNews && localNews.length) {
-    const published = localNews.filter((n) => n.status === "PUBLISH");
+    const published = localNews.filter((n) => n.status === "PUBLISH" || !n.status);
     if (published.length) {
       return published.map((n) => ({
         id: n.id,
@@ -94,6 +91,95 @@ export async function fetchNewsBySlug(slug: string) {
   if (found) return found;
 
   return null;
+}
+
+export async function fetchPublicPrograms() {
+  try {
+    const { data, error } = await supabase
+      .from("programs")
+      .select("id, title, category, description, target_text, cover_image, is_published")
+      .order("created_at", { ascending: false });
+    if (!error && data && data.length) {
+      return data.map((p) => ({
+        id: p.id,
+        title: p.title,
+        category: p.category,
+        target: p.target_text ?? "Masyarakat Umum",
+        description: p.description ?? "",
+        status: p.is_published ? "AKTIF" : "ARSIP",
+        image: p.cover_image ?? "",
+      }));
+    }
+  } catch {
+    // fallback
+  }
+
+  const local = getLocalStore<any>("programs");
+  if (local && local.length) return local;
+
+  return [];
+}
+
+export async function fetchPublicEvents() {
+  try {
+    const { data, error } = await supabase
+      .from("events")
+      .select("id, title, slug, category, status, quota, registered_count, price, description, location_text, poster_url, event_date_start, registration_start, registration_end")
+      .order("created_at", { ascending: false });
+    if (!error && data && data.length) {
+      return data.map((e) => ({
+        id: e.id,
+        title: e.title,
+        slug: e.slug,
+        category: e.category,
+        status: (e.status?.toUpperCase() as string) || "OPEN",
+        date: e.event_date_start ? new Date(e.event_date_start).toLocaleDateString("id-ID") : "12 September 2026",
+        location: e.location_text ?? "Sasak Panjang",
+        mapQuery: e.location_text ?? "Sasak Panjang",
+        quota: e.quota ?? 100,
+        registered: e.registered_count ?? 0,
+        fee: e.price ?? 0,
+        openDate: e.registration_start ?? "-",
+        closeDate: e.registration_end ?? "-",
+        committee: "Ahmad Fauzan, Nabila Rahmawati",
+        description: e.description ?? "",
+        image: e.poster_url ?? "",
+      }));
+    }
+  } catch {
+    // fallback
+  }
+
+  const local = getLocalStore<any>("events");
+  if (local && local.length) return local;
+
+  return [];
+}
+
+export async function fetchPublicSponsors() {
+  try {
+    const { data, error } = await supabase
+      .from("partners")
+      .select("id, name, logo_url, is_active")
+      .order("created_at", { ascending: false });
+    if (!error && data && data.length) {
+      return data.map((s) => ({
+        id: s.id,
+        name: s.name,
+        category: "Mitra Strategis",
+        contactPerson: "-",
+        status: s.is_active ? "AKTIF" : "NONAKTIF",
+        logo: s.logo_url ?? "",
+      }));
+    }
+  } catch {
+    // fallback
+  }
+
+  const local = getLocalStore<any>("sponsor");
+  if (local && local.length) return local;
+
+  return [];
 }
 
 export async function fetchApprovedComments(newsId: string) {
@@ -200,7 +286,6 @@ export async function fetchDonationPrograms() {
     const { data, error } = await supabase
       .from("donation_programs")
       .select("id, title, description, cover_image, target_amount, collected_amount")
-      .eq("is_active", true)
       .order("created_at", { ascending: true });
     if (!error && data && data.length) return data as DonationProgramRow[];
   } catch {
@@ -302,7 +387,6 @@ export async function globalSearch(term: string): Promise<SearchResult[]> {
       supabase
         .from("news")
         .select("slug, title, category")
-        .eq("status", "published")
         .ilike("title", like)
         .limit(5),
       supabase.from("events").select("slug, title, category").ilike("title", like).limit(5),

@@ -7,6 +7,7 @@ import { Reveal } from "@/components/site/reveal";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { fetchNewsList, formatDateId, NEWS_CATEGORIES } from "@/lib/cloud/public-data";
+import { resolvePublicImage } from "@/data/gencb";
 
 export const Route = createFileRoute("/berita/")({
   head: () => ({
@@ -89,7 +90,7 @@ function BeritaPage() {
                 className="group block h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"
               >
                 <img
-                  src={n.cover_image ?? "/favicon.png"}
+                  src={resolvePublicImage(n.cover_image, n.category)}
                   alt={n.title}
                   loading="lazy"
                   width={1200}

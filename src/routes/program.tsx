@@ -1,10 +1,12 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/page-hero";
 import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
-import { programs as defaultPrograms, images, getDummyImage } from "@/data/gencb";
+import { programs as defaultPrograms, images, resolvePublicImage } from "@/data/gencb";
 import { useCollection } from "@/lib/admin/store";
 import { seedPrograms, type ProgramRow } from "@/lib/admin/seed";
+import { fetchPublicPrograms } from "@/lib/cloud/public-data";
 
 export const Route = createFileRoute("/program")({
   head: () => ({
@@ -26,8 +28,20 @@ export const Route = createFileRoute("/program")({
 });
 
 function ProgramPage() {
-  const { items } = useCollection<ProgramRow>("programs", seedPrograms);
-  const displayList = items.length ? items : defaultPrograms;
+  const { items: localItems } = useCollection<ProgramRow>("programs", seedPrograms);
+  const [livePrograms, setLivePrograms] = useState<ProgramRow[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    void fetchPublicPrograms().then((p) => {
+      if (p.length && active) setLivePrograms(p as ProgramRow[]);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const displayList = livePrograms.length ? livePrograms : localItems.length ? localItems : defaultPrograms;
 
   return (
     <>
@@ -40,7 +54,7 @@ function ProgramPage() {
         <SectionHeading label="Kategori" title="Bidang gerakan GEN-CB" align="left" />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {displayList.map((p, i) => {
-            const imgSrc = getDummyImage((p as { image?: string }).image, p.category, images.progPendidikan);
+            const imgSrc = resolvePublicImage((p as { image?: string }).image, p.category, images.progPendidikan);
             return (
               <Reveal key={p.id || (p as { slug?: string }).slug || p.title} delay={i * 0.06}>
                 <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">

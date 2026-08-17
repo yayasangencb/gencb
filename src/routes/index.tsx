@@ -1,14 +1,16 @@
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, CalendarDays, HeartHandshake, MapPin, Quote, Users } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartHandshake, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { StatCounter } from "@/components/site/stat-counter";
 import { StatusBadge } from "@/components/site/status-badge";
-import { events as defaultEvents, gallery as defaultGallery, images, getDummyImage, news as defaultNews, ORG, partners as defaultPartners, programs as defaultPrograms, stats, testimonials } from "@/data/gencb";
+import { events as defaultEvents, gallery as defaultGallery, images, resolvePublicImage, news as defaultNews, ORG, partners as defaultPartners, programs as defaultPrograms, stats } from "@/data/gencb";
 import { useCollection } from "@/lib/admin/store";
 import { seedEvents, seedGallery, seedNews, seedPrograms, seedSponsors, seedDonationPrograms, type EventRow, type GalleryRow, type NewsRow, type ProgramRow, type SponsorRow, type DonationProgramRow } from "@/lib/admin/seed";
+import { fetchPublicPrograms, fetchPublicEvents, fetchNewsList, fetchPublicSponsors, fetchDonationPrograms } from "@/lib/cloud/public-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,26 +31,67 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function resolveImg(src?: string, category?: string, fallback?: string) {
-  return getDummyImage(src, category, fallback);
-}
-
 function Index() {
   const programsStore = useCollection<ProgramRow>("programs", seedPrograms);
   const eventsStore = useCollection<EventRow>("events", seedEvents);
   const newsStore = useCollection<NewsRow>("news", seedNews);
-  const galleryStore = useCollection<GalleryRow>("gallery", seedGallery);
   const sponsorsStore = useCollection<SponsorRow>("sponsor", seedSponsors);
-  const donationStore = useCollection<DonationProgramRow>("donation-programs", seedDonationPrograms);
 
-  const activePrograms = programsStore.items.filter((p) => p.status === "AKTIF");
-  const publishedNews = newsStore.items.filter((n) => n.status === "PUBLISH");
-  const liveEvents = eventsStore.items;
-  const activeDonation = donationStore.items.find((d) => d.status === "AKTIF") || donationStore.items[0];
+  const [livePrograms, setLivePrograms] = useState<ProgramRow[]>([]);
+  const [liveEvents, setLiveEvents] = useState<EventRow[]>([]);
+  const [liveNews, setLiveNews] = useState<NewsRow[]>([]);
+  const [liveSponsors, setLiveSponsors] = useState<SponsorRow[]>([]);
 
-  const partnerList = sponsorsStore.items.length
-    ? sponsorsStore.items.map((s) => s.name)
-    : defaultPartners;
+  useEffect(() => {
+    let active = true;
+    const fetchLive = async () => {
+      try {
+        const p = await fetchPublicPrograms();
+        if (p.length && active) setLivePrograms(p as ProgramRow[]);
+
+        const e = await fetchPublicEvents();
+        if (e.length && active) setLiveEvents(e as EventRow[]);
+
+        const n = await fetchNewsList();
+        if (n.length && active) {
+          const mapped: NewsRow[] = n.map((item) => ({
+            id: item.id,
+            title: item.title,
+            category: item.category,
+            author: "Nabila Rahmawati",
+            date: item.published_at ? item.published_at.slice(0, 10) : item.created_at.slice(0, 10),
+            status: "PUBLISH",
+            tags: (item.tags ?? []).join(", "),
+            seoTitle: item.seo_title ?? item.title,
+            seoDescription: item.seo_description ?? "",
+            content: item.content ?? "",
+            image: item.cover_image ?? "",
+          }));
+          setLiveNews(mapped);
+        }
+
+        const s = await fetchPublicSponsors();
+        if (s.length && active) setLiveSponsors(s as SponsorRow[]);
+      } catch {
+        // Fallthrough to local store if offline
+      }
+    };
+    void fetchLive();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const displayPrograms = livePrograms.length ? livePrograms : programsStore.items;
+  const activePrograms = displayPrograms.filter((p) => p.status !== "ARSIP");
+
+  const displayEvents = liveEvents.length ? liveEvents : eventsStore.items;
+
+  const displayNews = liveNews.length ? liveNews : newsStore.items;
+  const publishedNews = displayNews.filter((n) => n.status === "PUBLISH" || !n.status);
+
+  const displaySponsors = liveSponsors.length ? liveSponsors : sponsorsStore.items;
+  const partnerList = displaySponsors.length ? displaySponsors.map((s) => s.name) : defaultPartners;
 
   return (
     <>
@@ -145,7 +188,7 @@ function Index() {
         />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {(activePrograms.length ? activePrograms : defaultPrograms).map((p, i) => {
-            const imgSrc = resolveImg((p as { image?: string }).image, p.category, images.progPendidikan);
+            const imgSrc = resolvePublicImage((p as { image?: string }).image, p.category, images.progPendidikan);
             return (
               <Reveal key={p.id || p.title} delay={i * 0.06}>
                 <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
@@ -184,8 +227,8 @@ function Index() {
             description="Pendaftaran online tersedia untuk kegiatan berstatus OPEN."
           />
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {liveEvents.slice(0, 4).map((e, i) => {
-              const eventImg = resolveImg(e.image, e.category, images.heroImg);
+            {displayEvents.slice(0, 4).map((e, i) => {
+              const eventImg = resolvePublicImage(e.image, e.category, images.heroImg);
               return (
                 <Reveal key={e.id || e.slug} delay={i * 0.06}>
                   <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
@@ -199,7 +242,7 @@ function Index() {
                         className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute left-4 top-4">
-                        <StatusBadge status={e.status as "OPEN" | "SOON" | "ONGOING" | "CLOSED"} />
+                        <StatusBadge status={(e.status || "OPEN") as "OPEN" | "SOON" | "ONGOING" | "CLOSED"} />
                       </div>
                     </div>
                     <div className="flex flex-1 flex-col p-5">
@@ -231,7 +274,7 @@ function Index() {
         />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {(publishedNews.length ? publishedNews : defaultNews).map((n, i) => {
-            const newsImg = resolveImg((n as { image?: string }).image, n.category, images.progKeagamaan);
+            const newsImg = resolvePublicImage((n as { image?: string }).image, n.category, images.progKeagamaan);
             return (
               <Reveal key={n.id || n.title} delay={i * 0.08}>
                 <article className="group h-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
@@ -248,8 +291,15 @@ function Index() {
                       <span className="font-semibold text-accent">{n.category}</span>
                       <span>{n.date}</span>
                     </div>
-                    <h3 className="mt-3 font-display text-lg font-semibold">{n.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{n.content || (n as { excerpt?: string }).excerpt}</p>
+                    <h3 className="mt-2 font-display text-lg font-semibold">{n.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {(n as { excerpt?: string; content?: string }).excerpt || (n as { content?: string }).content || ""}
+                    </p>
+                    <Button asChild variant="ghost" size="sm" className="mt-4 px-0 font-semibold text-accent">
+                      <Link to="/berita/$slug" params={{ slug: n.slug || "pendaftaran-mtq-2026" }}>
+                        Baca Selengkapnya <ArrowRight />
+                      </Link>
+                    </Button>
                   </div>
                 </article>
               </Reveal>
@@ -258,110 +308,18 @@ function Index() {
         </div>
       </section>
 
-      <section className="bg-secondary/50 py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <SectionHeading label="Dokumentasi" title="Galeri kegiatan terbaru" />
-          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3">
-            {galleryStore.items.slice(0, 6).map((g, i) => {
-              const galImg = resolveImg(g.url, images.heroImg);
-              return (
-                <Reveal key={`${g.caption}-${i}`} delay={i * 0.05}>
-                  <div className="group relative overflow-hidden rounded-3xl shadow-soft">
-                    <img
-                      src={galImg}
-                      alt={g.caption}
-                      loading="lazy"
-                      width={1200}
-                      height={800}
-                      className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-xs font-medium text-white">
-                      {g.caption}
-                    </div>
-                  </div>
-                </Reveal>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
-        <Reveal>
-          <div className="relative overflow-hidden rounded-4xl bg-gradient-brand p-10 text-primary-foreground shadow-lift sm:p-14">
-            <div className="pointer-events-none absolute -right-10 -top-10 size-64 rounded-full bg-brand-orange/30 blur-3xl" />
-            <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-              <div>
-                <h2 className="text-3xl font-bold sm:text-4xl">Dukung gerakan ini lewat donasi</h2>
-                <p className="mt-4 max-w-xl text-sm leading-relaxed opacity-90">
-                  Setiap rupiah membantu biaya operasional Rumah Belajar, santunan anak yatim, dan
-                  penyelenggaraan kegiatan komunitas.
-                </p>
-                <Button asChild variant="accent" size="xl" className="mt-8">
-                  <Link to="/donasi">Donasi Sekarang</Link>
-                </Button>
-              </div>
-              {activeDonation && (
-                <div className="glass rounded-3xl p-6">
-                  <p className="text-sm opacity-85">Program Donasi Utama</p>
-                  <p className="mt-1 font-display text-xl font-semibold">{activeDonation.title}</p>
-                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/20">
-                    <div
-                      className="h-full rounded-full bg-gradient-accent"
-                      style={{
-                        width: `${Math.min(Math.round(((Number(activeDonation.collected) || 0) / (Number(activeDonation.target) || 1)) * 100), 100)}%`,
-                      }}
-                    />
-                  </div>
-                  <p className="mt-3 text-xs opacity-85">
-                    Rp {Number(activeDonation.collected || 0).toLocaleString("id-ID")} dari target Rp {Number(activeDonation.target || 0).toLocaleString("id-ID")}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      <section className="overflow-hidden py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <SectionHeading label="Partner & Sponsor" title="Mereka yang berkolaborasi bersama kami" />
-        </div>
-        <div className="relative mt-10 flex overflow-hidden">
-          <motion.div
-            className="flex shrink-0 gap-4 pr-4"
-            animate={{ x: ["0%", "-100%"] }}
-            transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
-          >
-            {[...partnerList, ...partnerList].map((p, i) => (
-              <span
-                key={`${p}-${i}`}
-                className="whitespace-nowrap rounded-2xl border border-border/60 bg-card px-6 py-4 text-sm font-medium text-muted-foreground shadow-soft"
-              >
+      <section className="bg-muted/40 py-16">
+        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Mitra & Kolaborator
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-8 text-sm font-semibold text-muted-foreground">
+            {partnerList.map((p) => (
+              <span key={p} className="rounded-xl border border-border/60 bg-card px-4 py-2 shadow-xs">
                 {p}
               </span>
             ))}
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
-        <SectionHeading label="Testimoni" title="Kata mereka tentang GEN-CB" />
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <Reveal key={t.name} delay={i * 0.08}>
-              <figure className="h-full rounded-3xl border border-border/60 bg-card p-7 shadow-soft">
-                <Quote className="size-7 text-accent" />
-                <blockquote className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                  “{t.quote}”
-                </blockquote>
-                <figcaption className="mt-6">
-                  <p className="font-display text-sm font-semibold">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.role}</p>
-                </figcaption>
-              </figure>
-            </Reveal>
-          ))}
+          </div>
         </div>
       </section>
     </>

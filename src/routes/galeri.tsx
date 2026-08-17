@@ -6,6 +6,7 @@ import { PageHero } from "@/components/site/page-hero";
 import { Reveal } from "@/components/site/reveal";
 import { cn } from "@/lib/utils";
 import { fetchAlbums, fetchMediaPage, type MediaRow } from "@/lib/cloud/public-data";
+import { resolvePublicImage } from "@/data/gencb";
 
 export const Route = createFileRoute("/galeri")({
   head: () => ({
@@ -118,7 +119,7 @@ function GaleriPage() {
                   <video src={g.url} className="h-56 w-full object-cover" muted playsInline />
                 ) : (
                   <img
-                    src={g.url}
+                    src={resolvePublicImage(g.url)}
                     alt={g.caption ?? "Dokumentasi GEN-CB"}
                     loading="lazy"
                     width={1200}
