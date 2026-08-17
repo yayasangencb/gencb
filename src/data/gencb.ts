@@ -52,6 +52,17 @@ export const ORG = {
   address: "Sekretariat GEN-CB, Desa Sasak Panjang, Kec. Tajurhalang, Kab. Bogor, Jawa Barat",
 };
 
+export const navLinks = [
+  { href: "/", label: "Beranda" },
+  { href: "/program", label: "Program" },
+  { href: "/event", label: "Event & Kegiatan" },
+  { href: "/berita", label: "Berita" },
+  { href: "/galeri", label: "Galeri" },
+  { href: "/donasi", label: "Donasi" },
+  { href: "/tentang", label: "Tentang Kami" },
+  { href: "/kontak", label: "Kontak" },
+];
+
 export const stats = [
   { label: "Program Terlaksana", value: 48, suffix: "+" },
   { label: "Peserta Terlibat", value: 3200, suffix: "+" },
