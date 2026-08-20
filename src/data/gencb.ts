@@ -70,6 +70,8 @@ export const stats = [
   { label: "Mitra & Sponsor", value: 34, suffix: "+" },
 ];
 
+export type EventStatus = "OPEN" | "SOON" | "ONGOING" | "CLOSED";
+
 export type ProgramCategory =
   | "Pendidikan"
   | "Keagamaan"
