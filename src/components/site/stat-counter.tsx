@@ -34,7 +34,7 @@ export function StatCounter({
         {display.toLocaleString("id-ID")}
         {suffix}
       </div>
-      <p className="mt-2 text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="mt-2 text-sm font-medium text-muted-foreground dark:text-white">{label}</p>
     </div>
   );
 }

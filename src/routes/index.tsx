@@ -141,9 +141,9 @@ function Index() {
               <Button asChild variant="glass" size="xl">
                 <Link to="/event">Daftar Kegiatan</Link>
               </Button>
-              <Button asChild variant="ghost" size="xl" className="text-primary-foreground hover:bg-white/10">
+              <Button asChild variant="ghost" size="xl" className="text-white hover:text-white hover:bg-white/15 dark:text-white font-semibold">
                 <Link to="/tentang">
-                  Tentang Kami <ArrowRight />
+                  Tentang Kami <ArrowRight className="size-5 text-white dark:text-white ml-1" />
                 </Link>
               </Button>
             </div>
@@ -161,11 +161,11 @@ function Index() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 + i * 0.12, duration: 0.6 }}
-                className="glass rounded-3xl p-5 text-primary-foreground shadow-soft"
+                className="glass rounded-3xl p-5 text-white dark:text-white shadow-soft border border-white/20 bg-white/10 backdrop-blur-md"
               >
-                <item.icon className="size-6" />
-                <p className="mt-4 font-display font-semibold">{item.title}</p>
-                <p className="mt-1 text-xs opacity-80">{item.desc}</p>
+                <item.icon className="size-6 text-white dark:text-white" />
+                <p className="mt-4 font-display font-semibold text-white dark:text-white text-base">{item.title}</p>
+                <p className="mt-1 text-xs text-white/95 dark:text-white/95">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -310,12 +310,12 @@ function Index() {
 
       <section className="bg-muted/40 py-16">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground dark:text-white/80">
             Mitra & Kolaborator
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-8 text-sm font-semibold text-muted-foreground">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-8 text-sm font-semibold text-foreground dark:text-white">
             {partnerList.map((p) => (
-              <span key={p} className="rounded-xl border border-border/60 bg-card px-4 py-2 shadow-xs">
+              <span key={p} className="rounded-xl border border-border/60 bg-card px-4 py-2 shadow-xs text-foreground dark:text-white">
                 {p}
               </span>
             ))}
