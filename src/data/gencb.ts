@@ -47,7 +47,7 @@ export const ORG = {
   name: "Generasi Cerdas Beraksi",
   short: "GEN-CB",
   tagline: "Membangun Generasi Cerdas, Berkarakter, dan Berdampak untuk Indonesia.",
-  email: "halo@gencb.or.id",
+  email: "yayasangencb@gmail.com",
   phone: "+62 857-7220-2454",
   address: "Sekretariat GEN-CB, Desa Sasak Panjang, Kec. Tajurhalang, Kab. Bogor, Jawa Barat",
 };
