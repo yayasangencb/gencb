@@ -123,15 +123,15 @@ function Index() {
             initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-primary-foreground"
+            className="text-white dark:text-white"
           >
-            <span className="glass inline-flex rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em]">
+            <span className="glass inline-flex rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white dark:text-white border border-white/30 bg-white/10 backdrop-blur-md shadow-sm">
               Yayasan Kepemudaan & Sosial
             </span>
-            <h1 className="mt-6 text-4xl font-bold leading-[1.1] sm:text-6xl">
+            <h1 className="mt-6 text-4xl font-bold leading-[1.1] sm:text-6xl text-white dark:text-white drop-shadow-sm">
               Generasi Cerdas Beraksi
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed opacity-90 sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-white/95 dark:text-white/95 sm:text-lg">
               {ORG.tagline}
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
