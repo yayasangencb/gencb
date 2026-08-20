@@ -36,29 +36,29 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b",
+        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-black/95 text-white backdrop-blur-md shadow-xl border-neutral-800"
-          : "bg-white/95 text-gray-900 backdrop-blur-md shadow-xs border-gray-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-800"
+          ? "bg-background/95 backdrop-blur-md border-b border-border/80 shadow-md py-1"
+          : "bg-transparent py-2",
       )}
     >
-      <nav className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-3">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link to="/" className="flex items-center gap-3 group">
           <img
             src={logoAsset.url}
             alt="Logo Generasi Cerdas Beraksi"
-            width={44}
-            height={44}
-            className="size-11 object-contain"
+            width={40}
+            height={40}
+            className="size-10 object-contain transition-transform duration-300 group-hover:scale-105"
           />
-          <span className="hidden font-display text-sm font-bold leading-tight sm:block">
-            <span className={scrolled ? "text-white" : "text-gray-900 dark:text-white"}>
+          <span className="hidden font-display text-base font-bold leading-tight sm:block">
+            <span className={cn("transition-colors", scrolled ? "text-foreground" : "text-white")}>
               GEN-CB
             </span>
             <span
               className={cn(
-                "block text-[10px] font-medium uppercase tracking-widest",
-                scrolled ? "text-neutral-400" : "text-gray-500 dark:text-neutral-400"
+                "block text-[10px] font-medium uppercase tracking-widest transition-colors",
+                scrolled ? "text-muted-foreground" : "text-white/80",
               )}
             >
               Generasi Cerdas Beraksi
@@ -66,22 +66,25 @@ export function Navbar() {
           </span>
         </Link>
 
+        {/* Desktop Navigation Links */}
         <div className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => {
-            const target = (link as { to?: string; href?: string }).to || link.href || "/";
+            const target = link.href || (link as { to?: string }).to || "/";
             return (
               <Link
                 key={target}
                 to={target}
                 activeOptions={{ exact: target === "/" }}
                 activeProps={{
-                  className: scrolled ? "text-white font-bold" : "text-emerald-700 font-bold dark:text-emerald-400",
+                  className: scrolled
+                    ? "font-bold text-foreground bg-muted/80"
+                    : "font-bold text-white bg-white/20",
                 }}
                 className={cn(
-                  "rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
+                  "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200",
                   scrolled
-                    ? "text-neutral-300 hover:text-white hover:bg-white/10"
-                    : "text-gray-700 hover:text-black hover:bg-gray-100 dark:text-neutral-200 dark:hover:text-white dark:hover:bg-neutral-800"
+                    ? "text-foreground/90 hover:text-foreground hover:bg-muted/80"
+                    : "text-white/90 hover:text-white hover:bg-white/10",
                 )}
               >
                 {link.label}
@@ -90,6 +93,7 @@ export function Navbar() {
           })}
         </div>
 
+        {/* Action Controls */}
         <div className="flex items-center gap-2">
           <GlobalSearch />
           <Button
@@ -97,71 +101,68 @@ export function Navbar() {
             size="icon"
             aria-label="Ubah tema"
             onClick={toggleTheme}
-            className={scrolled ? "text-white hover:bg-white/10 hover:text-white" : ""}
-          >
-            {dark ? <Sun /> : <Moon />}
-          </Button>
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
             className={cn(
-              "hidden lg:inline-flex",
-              scrolled ? "text-white hover:bg-white/10 hover:text-white" : ""
+              "rounded-full transition-colors",
+              scrolled
+                ? "text-foreground hover:bg-muted"
+                : "text-white hover:bg-white/15 hover:text-white",
             )}
           >
-            <Link to="/dashboard" search={{ id: undefined }}>
-              Dashboard
-            </Link>
+            {dark ? <Sun className="size-5" /> : <Moon className="size-5" />}
           </Button>
+
           <Button
             asChild
             variant="hero"
             size="sm"
-            className="hidden sm:inline-flex bg-emerald-600 hover:bg-emerald-700 text-white border-0 shadow-sm"
+            className="hidden sm:inline-flex rounded-full px-5"
           >
             <Link to="/event">Daftar Kegiatan</Link>
           </Button>
+
           <Button
             variant="ghost"
             size="icon"
-            className={cn("lg:hidden", scrolled ? "text-white hover:bg-white/10" : "")}
+            className={cn(
+              "lg:hidden rounded-full transition-colors",
+              scrolled ? "text-foreground" : "text-white hover:bg-white/15 hover:text-white",
+            )}
             aria-label="Buka menu"
             onClick={() => setOpen((v) => !v)}
           >
-            {open ? <X /> : <Menu />}
+            {open ? <X className="size-6" /> : <Menu className="size-6" />}
           </Button>
         </div>
       </nav>
 
+      {/* Mobile Drawer Menu */}
       {open ? (
-        <div
-          className={cn(
-            "border-t px-4 pb-6 pt-2 lg:hidden shadow-lg",
-            scrolled
-              ? "bg-black text-white border-neutral-800"
-              : "bg-white text-gray-900 border-gray-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-800"
-          )}
-        >
+        <div className="bg-background/98 border-b border-border px-4 pb-6 pt-3 shadow-xl backdrop-blur-lg lg:hidden animate-in fade-in slide-in-from-top-2">
           <div className="flex flex-col gap-1">
             {navLinks.map((link) => {
-              const target = (link as { to?: string; href?: string }).to || link.href || "/";
+              const target = link.href || (link as { to?: string }).to || "/";
               return (
                 <Link
                   key={target}
                   to={target}
                   onClick={() => setOpen(false)}
-                  className={cn(
-                    "rounded-xl px-3 py-3 text-sm font-medium transition-colors",
-                    scrolled
-                      ? "hover:bg-neutral-900 text-neutral-200"
-                      : "hover:bg-gray-100 text-gray-800 dark:hover:bg-neutral-900 dark:text-neutral-200"
-                  )}
+                  activeOptions={{ exact: target === "/" }}
+                  activeProps={{
+                    className: "bg-muted text-foreground font-bold",
+                  }}
+                  className="rounded-xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
                 >
                   {link.label}
                 </Link>
               );
             })}
+            <div className="mt-4 pt-4 border-t border-border flex flex-col gap-2">
+              <Button asChild variant="hero" className="w-full justify-center">
+                <Link to="/event" onClick={() => setOpen(false)}>
+                  Daftar Kegiatan
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       ) : null}
