@@ -36,6 +36,7 @@ function getLocalStore<T>(key: string): T[] | null {
 }
 
 export async function fetchNewsList() {
+  const local = getLocalStore<any>("news");
   try {
     const { data, error } = await supabase
       .from("news")
@@ -43,14 +44,34 @@ export async function fetchNewsList() {
         "id, slug, title, category, content, cover_image, published_at, created_at, tags, video_url, seo_title, seo_description",
       )
       .order("created_at", { ascending: false });
-    if (!error && data && data.length) return data as NewsRow[];
+
+    if (!error && data && data.length) {
+      const dbMapped = data as NewsRow[];
+      if (local && local.length) {
+        const localMap = new Map(local.map((item: any) => [item.id || item.title || item.slug, item]));
+        const merged = dbMapped.map((dbItem) => {
+          const loc = localMap.get(dbItem.id) || localMap.get(dbItem.title) || localMap.get(dbItem.slug);
+          if (loc) {
+            return {
+              ...dbItem,
+              title: loc.title || dbItem.title,
+              category: loc.category || dbItem.category,
+              content: loc.content || dbItem.content,
+              cover_image: loc.image || loc.cover_image || dbItem.cover_image,
+            };
+          }
+          return dbItem;
+        });
+        return merged;
+      }
+      return dbMapped;
+    }
   } catch {
     // fallback
   }
 
-  const localNews = getLocalStore<any>("news");
-  if (localNews && localNews.length) {
-    const published = localNews.filter((n) => n.status === "PUBLISH" || !n.status);
+  if (local && local.length) {
+    const published = local.filter((n) => n.status === "PUBLISH" || !n.status);
     if (published.length) {
       return published.map((n) => ({
         id: n.id,
@@ -81,7 +102,19 @@ export async function fetchNewsBySlug(slug: string) {
       )
       .eq("slug", slug)
       .maybeSingle();
-    if (!error && data) return data as NewsRow;
+    if (!error && data) {
+      const local = getLocalStore<any>("news");
+      if (local && local.length) {
+        const loc = local.find((i: any) => i.id === data.id || i.slug === slug || i.title === data.title);
+        if (loc) {
+          return {
+            ...data,
+            cover_image: loc.image || loc.cover_image || data.cover_image,
+          } as NewsRow;
+        }
+      }
+      return data as NewsRow;
+    }
   } catch {
     // fallback
   }
@@ -94,13 +127,15 @@ export async function fetchNewsBySlug(slug: string) {
 }
 
 export async function fetchPublicPrograms() {
+  const local = getLocalStore<any>("programs");
   try {
     const { data, error } = await supabase
       .from("programs")
       .select("id, title, category, description, target_text, cover_image, is_published")
       .order("created_at", { ascending: false });
+
     if (!error && data && data.length) {
-      return data.map((p) => ({
+      const dbMapped = data.map((p) => ({
         id: p.id,
         title: p.title,
         category: p.category,
@@ -109,25 +144,52 @@ export async function fetchPublicPrograms() {
         status: p.is_published ? "AKTIF" : "ARSIP",
         image: p.cover_image ?? "",
       }));
+
+      if (local && local.length) {
+        const localMap = new Map(local.map((item: any) => [item.id || item.title || item.slug, item]));
+        const merged = dbMapped.map((dbItem) => {
+          const loc = localMap.get(dbItem.id) || localMap.get(dbItem.title) || localMap.get(dbItem.slug);
+          if (loc) {
+            return {
+              ...dbItem,
+              title: loc.title || dbItem.title,
+              category: loc.category || dbItem.category,
+              target: loc.target || dbItem.target,
+              description: loc.description || dbItem.description,
+              image: loc.image || loc.cover_image || dbItem.image,
+              status: loc.status || dbItem.status,
+            };
+          }
+          return dbItem;
+        });
+
+        // Add any locally added programs not in DB
+        const dbIds = new Set(dbMapped.map((i) => i.id));
+        const extraLocal = local.filter((i: any) => i.id && !dbIds.has(i.id));
+        return [...merged, ...extraLocal];
+      }
+
+      return dbMapped;
     }
   } catch {
     // fallback
   }
 
-  const local = getLocalStore<any>("programs");
   if (local && local.length) return local;
 
   return [];
 }
 
 export async function fetchPublicEvents() {
+  const local = getLocalStore<any>("events");
   try {
     const { data, error } = await supabase
       .from("events")
       .select("id, title, slug, category, status, quota, registered_count, price, description, location_text, poster_url, event_date_start, registration_start, registration_end")
       .order("created_at", { ascending: false });
+
     if (!error && data && data.length) {
-      return data.map((e) => ({
+      const dbMapped = data.map((e) => ({
         id: e.id,
         title: e.title,
         slug: e.slug,
@@ -145,25 +207,46 @@ export async function fetchPublicEvents() {
         description: e.description ?? "",
         image: e.poster_url ?? "",
       }));
+
+      if (local && local.length) {
+        const localMap = new Map(local.map((item: any) => [item.id || item.title || item.slug, item]));
+        const merged = dbMapped.map((dbItem) => {
+          const loc = localMap.get(dbItem.id) || localMap.get(dbItem.title) || localMap.get(dbItem.slug);
+          if (loc) {
+            return {
+              ...dbItem,
+              title: loc.title || dbItem.title,
+              category: loc.category || dbItem.category,
+              image: loc.image || loc.poster_url || dbItem.image,
+              status: loc.status || dbItem.status,
+            };
+          }
+          return dbItem;
+        });
+        return merged;
+      }
+
+      return dbMapped;
     }
   } catch {
     // fallback
   }
 
-  const local = getLocalStore<any>("events");
   if (local && local.length) return local;
 
   return [];
 }
 
 export async function fetchPublicSponsors() {
+  const local = getLocalStore<any>("sponsor");
   try {
     const { data, error } = await supabase
       .from("partners")
       .select("id, name, logo_url, is_active")
       .order("created_at", { ascending: false });
+
     if (!error && data && data.length) {
-      return data.map((s) => ({
+      const dbMapped = data.map((s) => ({
         id: s.id,
         name: s.name,
         category: "Mitra Strategis",
@@ -171,12 +254,21 @@ export async function fetchPublicSponsors() {
         status: s.is_active ? "AKTIF" : "NONAKTIF",
         logo: s.logo_url ?? "",
       }));
+
+      if (local && local.length) {
+        const localMap = new Map(local.map((item: any) => [item.id || item.name, item]));
+        return dbMapped.map((dbItem) => {
+          const loc = localMap.get(dbItem.id) || localMap.get(dbItem.name);
+          return loc ? { ...dbItem, ...loc } : dbItem;
+        });
+      }
+
+      return dbMapped;
     }
   } catch {
     // fallback
   }
 
-  const local = getLocalStore<any>("sponsor");
   if (local && local.length) return local;
 
   return [];
@@ -245,6 +337,7 @@ export async function fetchAlbums() {
 }
 
 export async function fetchMediaPage(opts: { albumId?: string; from: number; to: number }) {
+  const local = getLocalStore<any>("gallery");
   try {
     let q = supabase
       .from("gallery_media")
@@ -253,17 +346,26 @@ export async function fetchMediaPage(opts: { albumId?: string; from: number; to:
       .range(opts.from, opts.to);
     if (opts.albumId) q = q.eq("album_id", opts.albumId);
     const { data, error } = await q;
-    if (!error && data && data.length) return data as MediaRow[];
+    if (!error && data && data.length) {
+      const dbMapped = data as MediaRow[];
+      if (local && local.length) {
+        const localMap = new Map(local.map((item: any) => [item.id || item.url, item]));
+        return dbMapped.map((dbItem) => {
+          const loc = localMap.get(dbItem.id) || localMap.get(dbItem.url);
+          return loc ? { ...dbItem, url: loc.url || loc.image || dbItem.url } : dbItem;
+        });
+      }
+      return dbMapped;
+    }
   } catch {
     // fallback
   }
 
-  const localGallery = getLocalStore<any>("gallery");
-  if (localGallery && localGallery.length) {
-    return localGallery.slice(opts.from, opts.to + 1).map((g, idx) => ({
+  if (local && local.length) {
+    return local.slice(opts.from, opts.to + 1).map((g, idx) => ({
       id: g.id || `m-${idx}`,
       album_id: opts.albumId || "alb-0",
-      url: g.url || g.src || "",
+      url: g.url || g.src || g.image || "",
       caption: g.caption || "Dokumentasi GEN-CB",
       media_type: g.type === "VIDEO" ? "VIDEO" : "FOTO",
     })) as MediaRow[];
@@ -282,19 +384,29 @@ export type DonationProgramRow = {
 };
 
 export async function fetchDonationPrograms() {
+  const local = getLocalStore<any>("donation-programs");
   try {
     const { data, error } = await supabase
       .from("donation_programs")
       .select("id, title, description, cover_image, target_amount, collected_amount")
       .order("created_at", { ascending: true });
-    if (!error && data && data.length) return data as DonationProgramRow[];
+    if (!error && data && data.length) {
+      const dbMapped = data as DonationProgramRow[];
+      if (local && local.length) {
+        const localMap = new Map(local.map((item: any) => [item.id || item.title, item]));
+        return dbMapped.map((dbItem) => {
+          const loc = localMap.get(dbItem.id) || localMap.get(dbItem.title);
+          return loc ? { ...dbItem, target_amount: Number(loc.target || dbItem.target_amount), collected_amount: Number(loc.collected || dbItem.collected_amount) } : dbItem;
+        });
+      }
+      return dbMapped;
+    }
   } catch {
     // fallback
   }
 
-  const localDonations = getLocalStore<any>("donation-programs");
-  if (localDonations && localDonations.length) {
-    const active = localDonations.filter((d) => d.status === "AKTIF" || !d.status);
+  if (local && local.length) {
+    const active = local.filter((d) => d.status === "AKTIF" || !d.status);
     if (active.length) {
       return active.map((d) => ({
         id: d.id,
