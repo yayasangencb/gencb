@@ -308,17 +308,30 @@ function Index() {
         </div>
       </section>
 
-      <section className="bg-muted/40 py-16">
+      <section className="bg-muted/40 py-16 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground dark:text-white/80">
             Mitra & Kolaborator
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-8 text-sm font-semibold text-foreground dark:text-white">
-            {partnerList.map((p) => (
-              <span key={p} className="rounded-xl border border-border/60 bg-card px-4 py-2 shadow-xs text-foreground dark:text-white">
-                {p}
-              </span>
-            ))}
+          <div className="relative mt-8 overflow-hidden py-2">
+            <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-20 bg-gradient-to-r from-muted/80 via-muted/40 to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-20 bg-gradient-to-l from-muted/80 via-muted/40 to-transparent" />
+
+            <motion.div
+              className="flex w-max items-center gap-6 text-sm font-semibold"
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ repeat: Infinity, duration: 28, ease: "linear" }}
+            >
+              {[...partnerList, ...partnerList, ...partnerList, ...partnerList].map((p, idx) => (
+                <span
+                  key={`${p}-${idx}`}
+                  className="inline-flex shrink-0 items-center gap-2.5 rounded-2xl border border-border/70 bg-card px-5 py-3 shadow-xs text-foreground dark:text-white whitespace-nowrap transition-transform duration-200 hover:scale-105"
+                >
+                  <span className="size-2 rounded-full bg-accent animate-pulse" />
+                  {p}
+                </span>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
